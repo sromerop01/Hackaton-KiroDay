@@ -4,6 +4,28 @@ inclusion: always
 
 # FrankenForms — Estructura del Proyecto y Modelo de Datos
 
+## Estructura del repositorio
+
+```
+.kiro/
+  agents/       # revisor, aws-infra, qa-demo
+  hooks/        # *.kiro.hook
+  powers/       # frankenforms-bedrock
+  security/     # modelo de amenazas, política IAM, checklist, aviso de privacidad
+  settings/     # mcp.json
+  skills/       # git-pr-flow
+  specs/        # frankenforms-mvp
+  steering/
+  README.md     # cómo se usó cada herramienta de Kiro
+.github/        # CI y plantilla de PR
+.vscode/        # settings.json y extensions.json compartidos
+docs/           # infra.md (tarea 13)
+scripts/        # test-extraction.ts, seed-demo.ts (se ejecutan con npx tsx)
+src/            # aplicación (ver abajo)
+amplify.yml
+README.md
+```
+
 ## Estructura de carpetas
 
 ```
@@ -12,6 +34,7 @@ src/
     page.tsx                          # Pantalla "Autopsia": subir foto
     revisar/[id]/page.tsx             # Pantalla "Revisión": corregir el esquema detectado
     f/[id]/page.tsx                   # Formulario público ("Vivo")
+    f/[id]/publicado/page.tsx         # Enlace, QR y enlace de administración
     f/[id]/respuestas/page.tsx        # Panel de respuestas
     api/
       forms/route.ts                  # POST: foto → esquema (Bedrock)
@@ -23,7 +46,10 @@ src/
     bedrock.ts      # Llamada a Amazon Bedrock (API Converse + tool use)
     db.ts           # Cliente y helpers de DynamoDB
     storage.ts      # Cliente y helpers de S3
-    validate.ts     # Validar respuestas de usuario contra el esquema del formulario
+    validate.ts     # buildResponseSchema: validar respuestas contra el esquema
+    auth.ts         # verifyAdminKey (SHA-256 + timingSafeEqual)
+    image.ts        # Compresión de imagen en el cliente
+    prompts/extraction.ts  # EXTRACTION_PROMPT
   components/
     FormRenderer.tsx            # Renderizador dinámico del formulario
     fields/                     # Un componente por tipo de campo
