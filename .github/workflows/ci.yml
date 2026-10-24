@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    name: Lint y build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verificar si existe package.json
+        id: check_pkg
+        run: |
+          if [ -f package.json ]; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+            echo "No hay proyecto Node.js todavía — CI omitido."
+          fi
+
+      - name: Configurar Node.js 20
+        if: steps.check_pkg.outputs.exists == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Instalar dependencias
+        if: steps.check_pkg.outputs.exists == 'true'
+        run: npm ci
+
+      - name: Lint
+        if: steps.check_pkg.outputs.exists == 'true'
+        run: npm run lint
+        env:
+          APP_REGION: us-east-1
+          DDB_TABLE: frankenforms-table
+          S3_BUCKET: frankenforms-bucket
+          BEDROCK_MODEL_ID: amazon.nova-pro-v1:0
+
+      - name: Build
+        if: steps.check_pkg.outputs.exists == 'true'
+        run: npm run build
+        env:
+          APP_REGION: us-east-1
+          DDB_TABLE: frankenforms-table
+          S3_BUCKET: frankenforms-bucket
+          BEDROCK_MODEL_ID: amazon.nova-pro-v1:0
