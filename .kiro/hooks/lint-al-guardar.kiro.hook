@@ -1,5 +1,5 @@
 {
-  "enabled": false,
+  "enabled": true,
   "name": "Lint al guardar",
   "description": "Ejecuta npm run lint al guardar un archivo .ts o .tsx dentro de src/. Deshabilitado hasta que exista package.json.",
   "version": "1",
