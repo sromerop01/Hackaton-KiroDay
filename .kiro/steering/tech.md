@@ -93,3 +93,7 @@ El prompt debe indicar al modelo:
 - Marcar como `required: true` solo lo que el formulario indique explícitamente (asterisco, la palabra "obligatorio" u equivalente).
 - **No inventar campos** que no estén en la foto.
 - Devolver únicamente JSON válido que cumpla el esquema; no agregar texto fuera del JSON.
+
+## Git
+
+Para cualquier operación de git (commit, push, PR) usa el skill `git-pr-flow`.
