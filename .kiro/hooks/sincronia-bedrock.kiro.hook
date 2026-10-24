@@ -1,0 +1,14 @@
+{
+  "enabled": true,
+  "name": "Sincronía bedrock ↔ FormSchema",
+  "description": "Al guardar src/lib/schema.ts, verifica que bedrock.ts sigue derivando el inputSchema de emit_form_schema desde FormSchema con z.toJSONSchema y elimina $schema.",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": ["src/lib/schema.ts"]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Verifica que src/lib/bedrock.ts derive el inputSchema de la herramienta emit_form_schema desde FormSchema con z.toJSONSchema y que elimine la clave $schema. Si bedrock.ts no existe todavía, no hagas nada."
+  }
+}

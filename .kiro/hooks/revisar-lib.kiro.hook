@@ -1,0 +1,14 @@
+{
+  "enabled": true,
+  "name": "Revisar tipos y secretos en lib",
+  "description": "Al guardar un archivo en src/lib/, verifica que no use any, que los tipos vengan de z.infer y que no haya secretos de AWS escritos en el código.",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": ["src/lib/**/*.ts"]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Revisa el archivo guardado: que no use any, que los tipos se deriven de z.infer y que no tenga claves, tokens ni IDs de cuenta de AWS escritos en el código. Reporta cada hallazgo con su línea o responde ✓ Sin problemas."
+  }
+}

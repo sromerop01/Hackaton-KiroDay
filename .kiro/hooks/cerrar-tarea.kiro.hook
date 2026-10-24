@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "name": "Cerrar tarea",
+  "description": "Disparo manual. Usa el skill git-pr-flow para cerrar la tarea actual: lint, build, commit de lo pendiente, push, PR y auto-merge.",
+  "version": "1",
+  "when": {
+    "type": "userTriggered"
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Usa el skill git-pr-flow para cerrar la tarea actual: lint, build, commit de lo pendiente, push, PR y auto-merge."
+  }
+}

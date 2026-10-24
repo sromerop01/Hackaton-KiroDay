@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "name": "Preparar demo",
+  "description": "Disparo manual. Comprueba que el formulario de respaldo creado por scripts/seed-demo.ts existe y responde correctamente en producción.",
+  "version": "1",
+  "when": {
+    "type": "userTriggered"
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Comprueba que el formulario de respaldo creado por scripts/seed-demo.ts existe y responde en producción. Muestra el enlace y el estado HTTP."
+  }
+}
