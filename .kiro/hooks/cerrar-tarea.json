@@ -1,0 +1,14 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Cerrar tarea",
+      "trigger": "UserPromptSubmit",
+      "description": "Hook manual para cerrar una tarea: lint, build, commit, push, PR y auto-merge usando el skill git-pr-flow.",
+      "action": {
+        "type": "agent",
+        "prompt": "Usa el skill git-pr-flow para cerrar la tarea actual: lint, build, commit de lo pendiente, push, PR y auto-merge."
+      }
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Verificar sincronía bedrock ↔ FormSchema",
+      "trigger": "PostFileSave",
+      "description": "Al guardar schema.ts, verifica que bedrock.ts sigue derivando el inputSchema de la herramienta desde FormSchema con z.toJSONSchema.",
+      "matcher": "src/lib/schema\\\\.ts$",
+      "action": {
+        "type": "agent",
+        "prompt": "Se acaba de guardar `src/lib/schema.ts`. Lee `src/lib/bedrock.ts` y verifica que la herramienta `emit_form_schema` sigue derivando su `inputSchema` desde `FormSchema` usando `z.toJSONSchema(FormSchema)` (Zod 4 nativo), y que se elimina la clave `$schema` del resultado antes de pasarlo a Bedrock. Si `bedrock.ts` todavía no existe, responde \"bedrock.ts pendiente de crear — sin acción\". Si hay alguna discrepancia, describe el problema y sugiere la corrección exacta."
+      }
+    }
+  ]
+}
