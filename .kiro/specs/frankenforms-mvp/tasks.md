@@ -4,16 +4,30 @@ Cada tarea termina con `npm run lint`, `npm run build` sin errores, y un commit 
 
 ---
 
-## Tarea 0 — Hooks de Kiro
+## Tarea 0 — Hooks de Kiro ✅
 
-Los hooks se crean con la herramienta `createHook` de Kiro (formato `.kiro/hooks/<id>.json`). El hook "Cerrar tarea" es de disparo **manual** y ya existe; no recrearlo automáticamente en cada prompt.
+Los hooks usan el formato `.kiro.hook` (reconocido por el panel Agent Hooks del IDE), un archivo por hook en `.kiro/hooks/`. Estructura:
 
-- [ ] Verificar que `.kiro/hooks/cerrar-tarea.json` **no existe** (fue borrado porque tenía trigger `UserPromptSubmit`). Si existe, eliminarlo.
-- [ ] Crear hook `PostFileSave` con matcher `src/.*\.(ts|tsx)$` y acción `command`: ejecutar `npm run lint 2>&1 | head -50` y reportar los errores encontrados sin cambiar el comportamiento del código.
-- [ ] Crear hook `PostFileSave` con matcher `src/lib/.*` y acción `agent`: prompt "Revisa el archivo guardado y verifica: (1) ausencia de `any`; (2) que todos los tipos salgan de `z.infer`; (3) que no haya claves, tokens ni IDs de cuenta de AWS escritos en el código. Reporta los hallazgos."
-- [ ] Crear hook `PostFileSave` con matcher `src/lib/schema\\.ts$` y acción `agent`: prompt "Verifica que `src/lib/bedrock.ts` sigue derivando el `inputSchema` de la herramienta `emit_form_schema` desde `FormSchema` usando `z.toJSONSchema(FormSchema)`. Reporta si hay alguna discrepancia."
-- [ ] Crear hook manual "Preparar demo" con acción `agent` y prompt: "Comprueba que el formulario de respaldo del script `scripts/seed-demo.ts` existe y responde correctamente en producción. Muestra el enlace y el estado HTTP."
-- [ ] Commit: `chore: hooks de kiro para lint, tipos y verificación de demo`
+```json
+{
+  "enabled": true,
+  "name": "...",
+  "description": "...",
+  "version": "1",
+  "when": { "type": "fileEdited | userTriggered", "patterns": ["..."] },
+  "then": { "type": "askAgent | runCommand", "prompt": "..." }
+}
+```
+
+Hooks creados:
+
+- [x] `lint-al-guardar.kiro.hook` — `fileEdited` · `src/**/*.{ts,tsx}` · `runCommand: npm run lint` · **disabled** hasta que exista `package.json`.
+- [x] `revisar-lib.kiro.hook` — `fileEdited` · `src/lib/**/*.ts` · `askAgent`: verifica ausencia de `any`, tipos de `z.infer` y sin secretos AWS; reporta por línea o `✓ Sin problemas`.
+- [x] `sincronia-bedrock.kiro.hook` — `fileEdited` · `src/lib/schema.ts` · `askAgent`: verifica que `bedrock.ts` usa `z.toJSONSchema(FormSchema)` y elimina `$schema`; no actúa si `bedrock.ts` no existe aún.
+- [x] `cerrar-tarea.kiro.hook` — `userTriggered` (manual) · `askAgent`: usa el skill `git-pr-flow` para cerrar la tarea actual.
+- [x] `preparar-demo.kiro.hook` — `userTriggered` (manual) · `askAgent`: comprueba que el formulario de respaldo existe en producción.
+
+- [x] Commit: `fix: hooks en formato kiro.hook reconocido por el ide`
 
 ---
 
