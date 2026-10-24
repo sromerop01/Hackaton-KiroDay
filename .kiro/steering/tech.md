@@ -97,3 +97,7 @@ El prompt debe indicar al modelo:
 ## Git
 
 Para cualquier operación de git (commit, push, PR) usa el skill `git-pr-flow`.
+
+## Seguridad
+
+Las reglas de seguridad detalladas están en `.kiro/security/` (modelo de amenazas, política de IAM, checklist y aviso de privacidad).
