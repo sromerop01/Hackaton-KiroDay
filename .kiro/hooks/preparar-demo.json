@@ -1,0 +1,14 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Preparar demo",
+      "trigger": "UserPromptSubmit",
+      "description": "Hook manual para verificar que el formulario de respaldo existe y responde en producción.",
+      "action": {
+        "type": "agent",
+        "prompt": "Comprueba que el formulario de respaldo del script `scripts/seed-demo.ts` existe y responde correctamente en producción. Muestra el enlace y el estado HTTP."
+      }
+    }
+  ]
+}

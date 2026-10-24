@@ -1,0 +1,16 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Lint al guardar",
+      "trigger": "PostFileSave",
+      "description": "Ejecuta npm run lint al guardar cualquier .ts o .tsx dentro de src/ y reporta los errores encontrados.",
+      "matcher": "src/.*\\.(ts|tsx)$",
+      "action": {
+        "type": "command",
+        "command": "npm run lint 2>&1 | head -80",
+        "timeout": 60
+      }
+    }
+  ]
+}
