@@ -57,8 +57,9 @@ const input: ConverseCommandInput = {
           description: "Emite el esquema estructurado del formulario detectado en la imagen.",
           inputSchema: {
             // El inputSchema es el JSON Schema del FormSchema de Zod.
-            // Se genera con zodToJsonSchema(FormSchema) del paquete zod-to-json-schema.
-            json: zodToJsonSchema(FormSchema),
+            // Usar z.toJSONSchema(FormSchema) nativo de Zod 4.
+            // Eliminar la clave $schema antes de pasar (Bedrock no la admite):
+            json: (() => { const { $schema, ...s } = z.toJSONSchema(FormSchema); return s })(),
           },
         },
       },
@@ -78,7 +79,31 @@ const input: ConverseCommandInput = {
 const response = await client.send(new ConverseCommand(input));
 ```
 
-### Extraer la llamada a la herramienta de la respuesta
+### verifyAdminKey — comparación segura (src/lib/auth.ts)
+
+La comparación directa con `timingSafeEqual` lanza excepción si las longitudes son distintas. La solución es comparar los hashes SHA-256, que siempre tienen la misma longitud (32 bytes):
+
+```typescript
+// src/lib/auth.ts
+import { createHash, timingSafeEqual } from 'crypto'
+
+function sha256(value: string): Buffer {
+  return createHash('sha256').update(value).digest()
+}
+
+export function verifyAdminKey(
+  searchParams: URLSearchParams | { get(key: string): string | null },
+  stored: string
+): boolean {
+  const provided = searchParams.get('k')
+  if (!provided) return false                          // falta el parámetro
+  return timingSafeEqual(sha256(provided), sha256(stored))
+}
+```
+
+Usar esta función en todos los route handlers y Server Components que requieren adminKey. **No** comparar strings directamente con `timingSafeEqual` (longitudes distintas → excepción no capturada).
+
+---
 
 ```typescript
 const output = response.output?.message?.content;
@@ -101,7 +126,7 @@ const parsed = FormSchema.safeParse(toolUse.input);
 | **`toolChoice.any`** | El modelo debe llamar al menos una herramienta, pero elige cuál. Útil con modelos que no soportan `specific`. |
 | **Bytes de imagen** | El SDK NO requiere base64. Pasar `Uint8Array` crudo. Si la imagen viene en base64, hacer `Buffer.from(b64string, 'base64')` → `new Uint8Array(...)`. |
 | **Header base64** | Si el base64 tiene prefijo `data:image/jpeg;base64,`, quitarlo antes: `.replace(/^data:image\/\w+;base64,/, '')`. |
-| **`inputSchema.json`** | El top-level del JSON Schema debe ser `type: "object"`. Zod lo genera correctamente con `zodToJsonSchema`. |
+| **`inputSchema.json`** | El top-level del JSON Schema debe ser `type: "object"`. Usar `z.toJSONSchema(FormSchema)` de Zod 4 nativo (sin paquete externo). Eliminar la clave `$schema` del resultado antes de pasarlo: `const { $schema, ...schema } = z.toJSONSchema(FormSchema)`. |
 | **Temperatura** | Usar `temperature: 0` para extracción estructurada. El campo va en `inferenceConfig`, no en `additionalModelRequestFields`. |
 
 ---
@@ -122,6 +147,7 @@ frontend:
   phases:
     preBuild:
       commands:
+        - nvm use 20
         - npm ci
     build:
       commands:

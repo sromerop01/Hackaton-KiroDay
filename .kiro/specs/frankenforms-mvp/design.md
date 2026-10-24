@@ -154,18 +154,30 @@ Este schema se usa en:
 
 ### Prompt del sistema
 
-Vive en `.kiro/prompts/extraction.md`. `bedrock.ts` lo importa como texto plano con:
+El prompt vive en `src/lib/prompts/extraction.ts` como una constante TypeScript exportada. Esto evita problemas con el bundle SSR de Next.js en Amplify (que no incluye archivos `.md` fuera de `src/`):
+
 ```typescript
-import extractionPrompt from '../../.kiro/prompts/extraction.md' assert { type: 'text' }
-// o con fs.readFileSync en tiempo de ejecución si el assert no está disponible
+// src/lib/prompts/extraction.ts
+export const EXTRACTION_PROMPT = `You are a form digitization engine. ...`
 ```
+
+`bedrock.ts` lo importa directamente:
+```typescript
+import { EXTRACTION_PROMPT } from '@/lib/prompts/extraction'
+```
+
+No usar `fs.readFileSync` ni `import ... assert { type: 'text' }` para este archivo.
 
 ### Llamada Converse
 
 ```typescript
+// Generar el JSON Schema desde Zod 4 nativo y quitar la clave $schema
+// (Bedrock no la admite en inputSchema.json)
+const { $schema, ...formJsonSchema } = z.toJSONSchema(FormSchema)
+
 const input: ConverseCommandInput = {
   modelId: process.env.BEDROCK_MODEL_ID,
-  system: [{ text: extractionPrompt }],
+  system: [{ text: EXTRACTION_PROMPT }],
   messages: [{
     role: 'user',
     content: [
@@ -178,7 +190,7 @@ const input: ConverseCommandInput = {
       toolSpec: {
         name: 'emit_form_schema',
         description: 'Emite el esquema estructurado del formulario detectado.',
-        inputSchema: { json: zodToJsonSchema(FormSchema) },
+        inputSchema: { json: formJsonSchema },
       },
     }],
     toolChoice: { tool: { name: 'emit_form_schema' } },
@@ -214,32 +226,41 @@ return parsed.data
 
 ---
 
-## Seguridad y adminKey
+## Seguridad y adminKey (src/lib/auth.ts)
+
+La verificación del adminKey está centralizada en `src/lib/auth.ts`. Compara los hashes SHA-256 de ambos valores para que `timingSafeEqual` nunca lance excepción por longitudes distintas, y devuelve `false` si falta el parámetro `k`:
 
 ```typescript
-// Comparación resistente a timing attacks
-import { timingSafeEqual } from 'crypto'
+// src/lib/auth.ts
+import { createHash, timingSafeEqual } from 'crypto'
 
-function verifyAdminKey(provided: string, stored: string): boolean {
-  if (provided.length !== stored.length) return false
-  return timingSafeEqual(Buffer.from(provided), Buffer.from(stored))
+function sha256(value: string): Buffer {
+  return createHash('sha256').update(value).digest()
+}
+
+export function verifyAdminKey(
+  searchParams: URLSearchParams | { get(key: string): string | null },
+  stored: string
+): boolean {
+  const provided = searchParams.get('k')
+  if (!provided) return false
+  return timingSafeEqual(sha256(provided), sha256(stored))
 }
 ```
 
-Rutas que exigen `?k=adminKey`:
-- `PUT /api/forms/[id]`
-- `GET /api/forms/[id]/responses`
-- `GET /api/forms/[id]/export`
-- Página `/revisar/[id]` (redirección al servidor si falla)
-- Página `/f/[id]/respuestas`
+Esta función se importa en:
+- Route handlers: `PUT /api/forms/[id]`, `GET /api/forms/[id]/responses`, `GET /api/forms/[id]/export`
+- Server Components: `/revisar/[id]`, `/f/[id]/publicado`, `/f/[id]/respuestas` (llaman directamente a `verifyAdminKey` + `getForm`, sin fetch a `/api`)
 
 ---
 
 ## Compresión de imagen (src/lib/image.ts — cliente)
 
+Usa un `<canvas>` del DOM con `toBlob` en lugar de `OffscreenCanvas`, para compatibilidad con iOS Safari:
+
 ```typescript
 export async function compressImage(file: File): Promise<Blob> {
-  // 1. Corregir orientación EXIF
+  // 1. Corregir orientación EXIF con createImageBitmap
   const bitmap = await createImageBitmap(file, { imageOrientation: 'from-image' })
 
   // 2. Calcular dimensiones (máx 1600 px en el lado mayor)
@@ -248,11 +269,21 @@ export async function compressImage(file: File): Promise<Blob> {
   const w = Math.round(bitmap.width * ratio)
   const h = Math.round(bitmap.height * ratio)
 
-  // 3. Dibujar en canvas y exportar
-  const canvas = new OffscreenCanvas(w, h)
+  // 3. Dibujar en <canvas> del DOM (compatible con iOS) y exportar
+  const canvas = document.createElement('canvas')
+  canvas.width = w
+  canvas.height = h
   const ctx = canvas.getContext('2d')!
   ctx.drawImage(bitmap, 0, 0, w, h)
-  return canvas.convertToBlob({ type: 'image/jpeg', quality: 0.8 })
+  bitmap.close()
+
+  return new Promise((resolve, reject) =>
+    canvas.toBlob(
+      blob => blob ? resolve(blob) : reject(new Error('toBlob devolvió null')),
+      'image/jpeg',
+      0.8
+    )
+  )
 }
 ```
 
@@ -262,8 +293,6 @@ export async function compressImage(file: File): Promise<Blob> {
 
 ```
 .kiro/
-  prompts/
-    extraction.md          # prompt del sistema para Bedrock
   skills/
     git-pr-flow/SKILL.md
   steering/
@@ -277,33 +306,36 @@ export async function compressImage(file: File): Promise<Blob> {
       design.md
       tasks.md
   hooks/
-    cerrar-tarea.json
+    (hooks de Kiro — ver Tarea 0)
 
 src/
   app/
     page.tsx                         # / — subir foto (Autopsia)
-    revisar/[id]/page.tsx            # /revisar/[id] — revisar esquema
+    revisar/[id]/page.tsx            # /revisar/[id] — Server Component, llama a getForm + verifyAdminKey
     f/
       [id]/
-        page.tsx                     # /f/{id} — formulario público
-        publicado/page.tsx           # /f/{id}/publicado — post-publicación
-        respuestas/page.tsx          # /f/{id}/respuestas — panel
+        page.tsx                     # /f/{id} — Server Component, llama a getForm
+        publicado/page.tsx           # /f/{id}/publicado — Server Component, llama a getForm + verifyAdminKey
+        respuestas/page.tsx          # /f/{id}/respuestas — Server Component, llama a listResponses + verifyAdminKey
     api/
       forms/
-        route.ts                     # POST: foto → esquema + guardar
+        route.ts                     # POST: foto → esquema + guardar (límite 5 MB)
         [id]/
-          route.ts                   # GET/PUT esquema
-          responses/route.ts         # POST respuesta pública / GET listado
-          export/route.ts            # GET CSV
+          route.ts                   # PUT esquema (requiere adminKey)
+          responses/route.ts         # POST respuesta pública
+          export/route.ts            # GET CSV (requiere adminKey)
     layout.tsx
     globals.css
   lib/
     schema.ts                        # Zod: FormSchema, Field, etc.
     validate.ts                      # buildResponseSchema
-    image.ts                         # compressImage (cliente)
+    auth.ts                          # verifyAdminKey con SHA-256 + timingSafeEqual
+    image.ts                         # compressImage (solo cliente, usa <canvas> del DOM)
     bedrock.ts                       # extractFormSchema
     db.ts                            # DynamoDB helpers
     storage.ts                       # S3 helpers
+    prompts/
+      extraction.ts                  # EXTRACTION_PROMPT como export de TypeScript
   components/
     FormRenderer.tsx
     ReanimationLoader.tsx
@@ -348,12 +380,13 @@ frontend:
   phases:
     preBuild:
       commands:
+        - nvm use 20
         - npm ci
     build:
       commands:
-        - env | grep -e APP_REGION    >> .env.production
-        - env | grep -e DDB_TABLE     >> .env.production
-        - env | grep -e S3_BUCKET     >> .env.production
+        - env | grep -e APP_REGION       >> .env.production
+        - env | grep -e DDB_TABLE        >> .env.production
+        - env | grep -e S3_BUCKET        >> .env.production
         - env | grep -e BEDROCK_MODEL_ID >> .env.production
         - npm run build
   artifacts:
