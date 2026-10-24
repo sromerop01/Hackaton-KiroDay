@@ -45,7 +45,7 @@ Hooks creados:
 
 ## Tarea 2 — amplify.yml y despliegue inicial
 
-- [ ] Crear `amplify.yml` en la raíz con `nvm use 20` en `preBuild` antes de `npm ci`, el patrón `env | grep` para las 4 variables y la estructura de artefactos de `.next`. Ver diseño técnico, sección `amplify.yml`.
+- [x] Crear `amplify.yml` en la raíz con `nvm use 20` en `preBuild` antes de `npm ci`, el patrón `env | grep` para las 4 variables y la estructura de artefactos de `.next`. Ver diseño técnico, sección `amplify.yml`.
 - [ ] Conectar el repositorio en la consola de Amplify Hosting (manual, instrucciones en el commit body si aplica).
 - [ ] Verificar que el pipeline de Amplify despliega sin errores (aunque la app esté vacía).
 - [ ] Commit: `chore: amplify.yml con nvm use 20 y variables de entorno en ssr`
