@@ -6,10 +6,13 @@ Cada tarea termina con `npm run lint`, `npm run build` sin errores, y un commit 
 
 ## Tarea 0 — Hooks de Kiro
 
-- [ ] Crear hook PostFileSave en `.kiro/hooks/` que, al guardar un `.ts` o `.tsx` dentro de `src/`, ejecute `npm run lint` y reporte los errores encontrados sin cambiar el comportamiento del código.
-- [ ] Crear hook PostFileSave en `.kiro/hooks/` que, al editar cualquier archivo en `src/lib/`, verifique: ausencia de `any`, que los tipos salgan de `z.infer`, y que no haya claves, tokens ni IDs de cuenta de AWS escritos en el código; reportar los hallazgos.
-- [ ] Crear hook PostFileSave en `.kiro/hooks/` que, al editar `src/lib/schema.ts`, verifique que `src/lib/bedrock.ts` sigue derivando el `inputSchema` de la herramienta desde `FormSchema`.
-- [ ] Crear hook manual "Preparar demo" en `.kiro/hooks/` con el prompt: "Comprueba que el formulario de respaldo del script `scripts/seed-demo.ts` existe y responde correctamente en producción. Muestra el enlace y el estado HTTP."
+Los hooks se crean con la herramienta `createHook` de Kiro (formato `.kiro/hooks/<id>.json`). El hook "Cerrar tarea" es de disparo **manual** y ya existe; no recrearlo automáticamente en cada prompt.
+
+- [ ] Verificar que `.kiro/hooks/cerrar-tarea.json` **no existe** (fue borrado porque tenía trigger `UserPromptSubmit`). Si existe, eliminarlo.
+- [ ] Crear hook `PostFileSave` con matcher `src/.*\.(ts|tsx)$` y acción `command`: ejecutar `npm run lint 2>&1 | head -50` y reportar los errores encontrados sin cambiar el comportamiento del código.
+- [ ] Crear hook `PostFileSave` con matcher `src/lib/.*` y acción `agent`: prompt "Revisa el archivo guardado y verifica: (1) ausencia de `any`; (2) que todos los tipos salgan de `z.infer`; (3) que no haya claves, tokens ni IDs de cuenta de AWS escritos en el código. Reporta los hallazgos."
+- [ ] Crear hook `PostFileSave` con matcher `src/lib/schema\\.ts$` y acción `agent`: prompt "Verifica que `src/lib/bedrock.ts` sigue derivando el `inputSchema` de la herramienta `emit_form_schema` desde `FormSchema` usando `z.toJSONSchema(FormSchema)`. Reporta si hay alguna discrepancia."
+- [ ] Crear hook manual "Preparar demo" con acción `agent` y prompt: "Comprueba que el formulario de respaldo del script `scripts/seed-demo.ts` existe y responde correctamente en producción. Muestra el enlace y el estado HTTP."
 - [ ] Commit: `chore: hooks de kiro para lint, tipos y verificación de demo`
 
 ---
@@ -28,10 +31,10 @@ Cada tarea termina con `npm run lint`, `npm run build` sin errores, y un commit 
 
 ## Tarea 2 — amplify.yml y despliegue inicial
 
-- [ ] Crear `amplify.yml` en la raíz con el patrón `env | grep` para las 4 variables y la estructura de artefactos de `.next`. Ver diseño técnico, sección `amplify.yml`.
+- [ ] Crear `amplify.yml` en la raíz con `nvm use 20` en `preBuild` antes de `npm ci`, el patrón `env | grep` para las 4 variables y la estructura de artefactos de `.next`. Ver diseño técnico, sección `amplify.yml`.
 - [ ] Conectar el repositorio en la consola de Amplify Hosting (manual, instrucciones en el commit body si aplica).
 - [ ] Verificar que el pipeline de Amplify despliega sin errores (aunque la app esté vacía).
-- [ ] Commit: `chore: amplify.yml para despliegue con variables de entorno en SSR`
+- [ ] Commit: `chore: amplify.yml con nvm use 20 y variables de entorno en ssr`
 
 ---
 
@@ -51,12 +54,17 @@ Cada tarea termina con `npm run lint`, `npm run build` sin errores, y un commit 
 
 ## Tarea 4 — Compresión de imagen y pantalla de subida
 
-- [ ] Crear `src/lib/image.ts` con la función `compressImage(file: File): Promise<Blob>` usando `createImageBitmap` con `imageOrientation: 'from-image'`, `OffscreenCanvas` y la lógica de redimensionado (máx 1600 px, JPEG 0.8). Ver diseño técnico, sección Compresión de imagen.
+- [ ] Crear `src/lib/image.ts` con la función `compressImage(file: File): Promise<Blob>`:
+  - Usar `createImageBitmap(file, { imageOrientation: 'from-image' })` para corregir EXIF.
+  - Calcular dimensiones con máx 1600 px en el lado mayor.
+  - Dibujar en un `<canvas>` del DOM (`document.createElement('canvas')`) y exportar con `canvas.toBlob(..., 'image/jpeg', 0.8)`.
+  - **No usar `OffscreenCanvas`** (no compatible con iOS Safari).
+  - Ver diseño técnico, sección Compresión de imagen.
 - [ ] Crear el componente `src/components/ReanimationLoader.tsx`: animación de rayo (CSS o SVG) con mensajes rotativos ("Diagnosticando al paciente…", "Conectando electrodos…", "Dándole vida…") y paleta Halloween.
 - [ ] Crear la página `src/app/page.tsx` con:
   - Aviso de privacidad visible ANTES del botón de subida.
   - `<input accept="image/*" capture="environment">` estilizado.
-  - Al seleccionar la imagen: llamar a `compressImage`, mostrar preview, y habilitar el botón "Reanimat".
+  - Al seleccionar la imagen: llamar a `compressImage`, mostrar preview, y habilitar el botón "Reanimar".
   - Al hacer clic en "Reanimar": llamar a `POST /api/forms`, mostrar `ReanimationLoader`, y redirigir a `/revisar/{id}?k={adminKey}` al terminar.
   - Manejo de errores: mensaje amable si el API falla (incluyendo el caso ILEGIBLE).
 - [ ] Aplicar paleta Halloween a esta pantalla en `globals.css` o con variables CSS.
@@ -66,15 +74,16 @@ Cada tarea termina con `npm run lint`, `npm run build` sin errores, y un commit 
 
 ## Tarea 5 — Extracción con Bedrock
 
-- [ ] Crear `.kiro/prompts/extraction.md` con el prompt del sistema exactamente como está en los requisitos (preservar texto, tipos, obligatoriedad, etc.).
+- [ ] Crear `src/lib/prompts/extraction.ts` con la constante `export const EXTRACTION_PROMPT = \`...\`` que contiene el prompt del sistema exactamente como está en los requisitos. Este archivo es TypeScript puro para que el bundler de Next.js lo incluya en el SSR sin configuración adicional.
 - [ ] Crear `src/lib/bedrock.ts` con la función `extractFormSchema(imageBytes: Uint8Array): Promise<FormSchemaType>`:
-  - Importar el prompt de `.kiro/prompts/extraction.md` como texto (con `fs.readFileSync` al momento de la llamada o equivalente).
-  - Construir el `ConverseCommandInput` con la imagen, el sistema, la herramienta `emit_form_schema` cuyo `inputSchema` sale de `zodToJsonSchema(FormSchema)`, `toolChoice: { tool: { name: 'emit_form_schema' } }`, `temperature: 0` y `maxTokens: 4096`.
+  - Importar `EXTRACTION_PROMPT` desde `@/lib/prompts/extraction`.
+  - Generar el JSON Schema con `z.toJSONSchema(FormSchema)` de Zod 4 nativo; desestructurar y descartar `$schema` antes de pasarlo como `inputSchema.json`.
+  - Construir el `ConverseCommandInput` con la imagen, el sistema, la herramienta `emit_form_schema`, `toolChoice: { tool: { name: 'emit_form_schema' } }`, `temperature: 0` y `maxTokens: 4096`.
   - Extraer `toolUse.input` de la respuesta.
   - Validar con `FormSchema.safeParse`. Si falla, reintentar con el error como mensaje adicional.
   - Si el título es `"ILEGIBLE"`, lanzar `IlegibleError`.
   - Si el segundo intento falla, lanzar `ExtractionError`.
-- [ ] Crear `src/app/api/forms/route.ts` con solo el `POST` (sin guardar aún): recibe multipart/form-data con la imagen, llama a `extractFormSchema` y devuelve el schema en JSON. Validar el tamaño máximo (10 MB).
+- [ ] Crear `src/app/api/forms/route.ts` con solo el `POST` (sin guardar aún): recibe multipart/form-data con la imagen, rechaza si supera **5 MB**, llama a `extractFormSchema` y devuelve el schema en JSON.
 - [ ] Crear `scripts/test-extraction.ts`: recibe la ruta de una imagen como argumento `process.argv[2]`, llama a `extractFormSchema` directamente (leyendo la imagen con `fs.readFileSync`) e imprime el JSON resultante y la latencia en ms.
 - [ ] Probar manualmente con `npx tsx scripts/test-extraction.ts <ruta-imagen>` y confirmar que funciona con una foto de formulario real antes de hacer commit.
 - [ ] Commit: `feat: integración con bedrock para extracción del esquema`
@@ -86,6 +95,7 @@ Cada tarea termina con `npm run lint`, `npm run build` sin errores, y un commit 
 - [ ] Crear `src/lib/storage.ts` con:
   - `uploadImage(id: string, bytes: Uint8Array): Promise<void>` — sube a S3 con key `uploads/{id}.jpg`, `ContentType: 'image/jpeg'`, sin ACL pública.
   - Cliente `S3Client` instanciado con `{ region: process.env.APP_REGION }`.
+- [ ] Crear `src/lib/auth.ts` con `verifyAdminKey(searchParams, stored)` que compara SHA-256 de ambos valores con `timingSafeEqual` y devuelve `false` si falta `k`. Ver diseño técnico, sección Seguridad y adminKey.
 - [ ] Crear `src/lib/db.ts` con:
   - Cliente `DynamoDBClient` + `DynamoDBDocumentClient`.
   - `saveForm(form: FormRecord): Promise<void>` — `PutItem` en la tabla.
@@ -95,6 +105,7 @@ Cada tarea termina con `npm run lint`, `npm run build` sin errores, y un commit 
   - `saveResponse(response: ResponseRecord): Promise<void>` — `PutItem`.
   - Tipos `FormRecord` y `ResponseRecord` derivados de Zod o definidos en `schema.ts`.
 - [ ] Actualizar `POST /api/forms/route.ts` para:
+  - Rechazar imágenes mayores de **5 MB** con 413.
   - Llamar a `extractFormSchema`.
   - Generar `id = nanoid(10)` y `adminKey = nanoid(24)`.
   - Subir la imagen a S3 con `uploadImage`.
@@ -106,23 +117,20 @@ Cada tarea termina con `npm run lint`, `npm run build` sin errores, y un commit 
 
 ## Tarea 7 — Pantalla de revisión y edición del esquema
 
-- [ ] Crear `GET /api/forms/[id]/route.ts`:
-  - Lee el formulario de DynamoDB.
-  - Requiere `?k=adminKey` (comparar con `timingSafeEqual`). Devuelve 401 si falla.
-  - Devuelve el formulario **sin** el `adminKey`.
 - [ ] Crear `PUT /api/forms/[id]/route.ts`:
-  - Requiere `?k=adminKey`.
+  - Requiere `?k=adminKey` (usar `verifyAdminKey` de `src/lib/auth.ts`). Devuelve 401 si falla.
   - Acepta `{ fields, title, description, status }` en el body.
   - Valida el esquema completo con `FormSchema` antes de guardar.
-  - Actualiza en DynamoDB.
-  - Si `status === 'publicado'`, redirige en la respuesta a `/f/{id}/publicado?k={adminKey}`.
-- [ ] Crear `src/app/revisar/[id]/page.tsx` (Server Component que pasa datos al cliente):
+  - Actualiza en DynamoDB con `updateForm`.
+  - Si `status === 'publicado'`, devuelve `{ redirect: '/f/{id}/publicado?k={adminKey}' }` para que el cliente redirija.
+- [ ] Crear `src/app/revisar/[id]/page.tsx` como **Server Component**:
   - Recibe `id` y `k` como params/searchParams.
-  - Llama al `GET /api/forms/[id]` con el adminKey.
-  - Si falla: muestra error "Acceso denegado" o "Formulario no encontrado".
-  - Renderiza un editor de campos: tabla o lista con controles para editar etiqueta, tipo, obligatoriedad, opciones; botones para agregar y eliminar campos; drag-and-drop o botones de subir/bajar para reordenar.
-  - Botón "Guardar borrador" → `PUT` con `status: 'borrador'`.
-  - Botón "Publicar" → `PUT` con `status: 'publicado'`.
+  - Llama directamente a `getForm(id)` y `verifyAdminKey(searchParams, form.adminKey)` — **sin fetch a `/api`**.
+  - Si falla la verificación: muestra error "Acceso denegado" o `notFound()`.
+  - Pasa el formulario a un Client Component hijo para el editor interactivo.
+  - El editor tiene: controles para editar etiqueta, tipo, obligatoriedad, opciones; botones para agregar y eliminar campos; botones de subir/bajar para reordenar.
+  - Botón "Guardar borrador" → `PUT /api/forms/{id}?k=...` con `status: 'borrador'`.
+  - Botón "Publicar" → `PUT /api/forms/{id}?k=...` con `status: 'publicado'` y redirección.
 - [ ] Commit: `feat: pantalla de revisión y edición del esquema`
 
 ---
@@ -148,39 +156,41 @@ Cada tarea termina con `npm run lint`, `npm run build` sin errores, y un commit 
 ## Tarea 9 — Formulario público y guardado de respuestas
 
 - [ ] Crear `POST /api/forms/[id]/responses/route.ts`:
-  - Lee el formulario de DynamoDB. Si no existe o `status !== 'publicado'`, devuelve 404.
+  - Lee el formulario de DynamoDB con `getForm`. Si no existe o `status !== 'publicado'`, devuelve 404.
   - Valida el body con `buildResponseSchema(form)`.
   - Guarda la respuesta con `pk=FORM#{id}`, `sk=RESP#{Date.now()}#{uuid}`, `values`, `submittedAt`.
   - Devuelve `{ ok: true }`.
-- [ ] Crear `src/app/f/[id]/page.tsx`:
-  - Server Component: carga el formulario de DynamoDB. Si no existe o está en borrador, retorna `notFound()`.
+- [ ] Crear `src/app/f/[id]/page.tsx` como **Server Component**:
+  - Llama directamente a `getForm(id)` — **sin fetch a `/api`**.
+  - Si no existe o `status !== 'publicado'`, retorna `notFound()`.
   - Renderiza el título, descripción y `<FormRenderer>` con paleta sobria (fondo blanco, contraste alto).
-  - Al enviar: llama a `POST /api/forms/{id}/responses`. Muestra mensaje de éxito o error.
+  - `FormRenderer` es un Client Component que, al enviar, llama a `POST /api/forms/{id}/responses` y muestra mensaje de éxito o error.
 - [ ] Commit: `feat: formulario público y guardado de respuestas`
 
 ---
 
 ## Tarea 10 — Pantalla de publicación con QR
 
-- [ ] Crear `src/app/f/[id]/publicado/page.tsx`:
-  - Requiere `?k=adminKey` (verificar en el servidor). Si falla, redirigir a `/`.
-  - Genera el QR del enlace público con `qrcode` (como data URL o SVG).
-  - Muestra: enlace público, QR, botón "Copiar enlace" (`navigator.clipboard.writeText`), y el enlace de administración `/f/{id}/respuestas?k={adminKey}` con advertencia "Guarda este enlace, no lo podrás recuperar".
+- [ ] Crear `src/app/f/[id]/publicado/page.tsx` como **Server Component**:
+  - Recibe `id` y `k` de searchParams.
+  - Llama directamente a `getForm(id)` y `verifyAdminKey(searchParams, form.adminKey)` — **sin fetch a `/api`**.
+  - Si falla la verificación, redirige a `/`.
+  - Genera el QR del enlace público con `qrcode` (como data URL).
+  - Muestra: enlace público, QR, botón "Copiar enlace" (Client Component), y el enlace de administración `/f/{id}/respuestas?k={adminKey}` con advertencia "Guarda este enlace, no lo podrás recuperar".
 - [ ] Commit: `feat: pantalla de publicación con qr y enlace de administración`
 
 ---
 
 ## Tarea 11 — Panel de respuestas y exportación CSV
 
-- [ ] Crear `GET /api/forms/[id]/responses/route.ts`:
-  - Requiere `?k=adminKey` (timingSafeEqual).
-  - Devuelve las respuestas con `listResponses`.
 - [ ] Crear `GET /api/forms/[id]/export/route.ts`:
-  - Requiere `?k=adminKey`.
+  - Requiere `?k=adminKey` (usar `verifyAdminKey`). Devuelve 401 si falla.
+  - Carga el formulario con `getForm` y las respuestas con `listResponses`.
   - Genera el CSV: BOM UTF-8, encabezados ("Fecha" + labels de campos), filas con escape de celdas y protección CSV injection.
   - Devuelve con `Content-Type: text/csv; charset=utf-8` y `Content-Disposition: attachment; filename="respuestas.csv"`.
-- [ ] Crear `src/app/f/[id]/respuestas/page.tsx`:
-  - Requiere `?k=adminKey` (verificar con `GET /api/forms/[id]`). Si falla: 401.
+- [ ] Crear `src/app/f/[id]/respuestas/page.tsx` como **Server Component**:
+  - Llama directamente a `getForm(id)`, `verifyAdminKey(searchParams, form.adminKey)` y `listResponses(id)` — **sin fetch a `/api`**.
+  - Si falla la verificación: 401 / redirección.
   - Muestra título del formulario, número de respuestas y tabla con todas las respuestas.
   - Botón "Exportar CSV" → enlace a `/api/forms/{id}/export?k={adminKey}`.
 - [ ] Commit: `feat: panel de respuestas y exportación csv`
