@@ -1,0 +1,31 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "BedrockInvokeVisionModel",
+      "Effect": "Allow",
+      "Action": "bedrock:InvokeModel",
+      "Resource": [
+        "arn:aws:bedrock:<REGION>:<ACCOUNT_ID>:inference-profile/<INFERENCE_PROFILE_ID>",
+        "arn:aws:bedrock:*::foundation-model/<FOUNDATION_MODEL_ID>"
+      ]
+    },
+    {
+      "Sid": "DynamoDBFormsTable",
+      "Effect": "Allow",
+      "Action": [
+        "dynamodb:GetItem",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:Query"
+      ],
+      "Resource": "arn:aws:dynamodb:<REGION>:<ACCOUNT_ID>:table/<TABLE_NAME>"
+    },
+    {
+      "Sid": "S3PrivateUploads",
+      "Effect": "Allow",
+      "Action": ["s3:PutObject", "s3:GetObject"],
+      "Resource": "arn:aws:s3:::<BUCKET_NAME>/uploads/*"
+    }
+  ]
+}
