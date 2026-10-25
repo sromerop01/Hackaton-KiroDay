@@ -84,7 +84,7 @@ La tabla usa claves `pk` (partition key, String) y `sk` (sort key, String).
 | `description` | `"texto opcional"` | Descripción opcional |
 | `fields` | `[...]` | Array de campos (ver esquema abajo) |
 | `imageKey` | `uploads/abc1234567.jpg` | Key del objeto en S3 |
-| `status` | `draft` \| `published` | Estado del formulario |
+| `status` | `borrador` \| `publicado` | Estado del formulario |
 | `createdAt` | `"2026-10-24T..."` | ISO 8601 |
 
 ### Registro de respuesta
@@ -102,27 +102,49 @@ La tabla usa claves `pk` (partition key, String) y `sk` (sort key, String).
 
 ```typescript
 // Tipos de campo permitidos
-const FieldType = z.enum(['text', 'textarea', 'number', 'date', 'email', 'select', 'checkbox'])
+export const FieldType = z.enum([
+  'text', 'textarea', 'number', 'date', 'email', 'select', 'checkbox'
+])
 
-const Field = z.object({
-  id:       z.string(),           // snake_case, sin espacios
-  label:    z.string(),           // texto original del formulario
-  type:     FieldType,
-  required: z.boolean().default(false),
-  options:  z.array(z.string()).optional(), // solo para select y checkbox múltiple
-  validation: z.object({
-    minLength: z.number().optional(),
-    maxLength: z.number().optional(),
-    min:       z.number().optional(),       // para number
-    max:       z.number().optional(),       // para number
-    pattern:   z.string().optional(),       // regex como string
-  }).optional(),
+export const FieldValidation = z.object({
+  minLength: z.number().int().nonnegative().optional(),
+  maxLength: z.number().int().positive().optional(),
+  min:       z.number().optional(),
+  max:       z.number().optional(),
+  pattern:   z.string().max(100)
+    .refine(p => { try { new RegExp(p); return true } catch { return false } },
+      { message: 'Patrón inválido' })
+    .optional(),
 })
 
-const FormSchema = z.object({
-  title:       z.string(),
-  description: z.string().optional(),
-  fields:      z.array(Field).min(1),
+export const Field = z.object({
+  id:          z.string().regex(/^[a-z][a-z0-9_]{0,49}$/, 'id inválido'),
+  label:       z.string().min(1).max(200),
+  type:        FieldType,
+  required:    z.boolean().default(false),
+  placeholder: z.string().max(200).optional(),
+  options:     z.array(z.string().min(1).max(100)).max(50).optional(),
+  validation:  FieldValidation.optional(),
+})
+
+export const FormSchema = z.object({
+  title:       z.string().min(1).max(200),
+  description: z.string().max(1000).optional(),
+  fields:      z.array(Field).min(1).max(60),
+}).superRefine((data, ctx) => {
+  // ids únicos
+  const ids = data.fields.map(f => f.id)
+  const dupes = ids.filter((id, i) => ids.indexOf(id) !== i)
+  if (dupes.length > 0) {
+    ctx.addIssue({ code: 'custom', message: `IDs duplicados: ${dupes.join(', ')}` })
+  }
+  // select necesita ≥ 2 opciones
+  data.fields.forEach((f, i) => {
+    if (f.type === 'select' && (!f.options || f.options.length < 2)) {
+      ctx.addIssue({ code: 'custom', path: ['fields', i, 'options'],
+        message: 'select requiere al menos 2 opciones' })
+    }
+  })
 })
 ```
 
