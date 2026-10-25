@@ -49,3 +49,6 @@ next-env.d.ts
 
 # aws local
 .aws/
+
+# fotos de prueba para la extracción (no subir)
+scripts/fixtures/
