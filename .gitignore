@@ -52,3 +52,6 @@ next-env.d.ts
 
 # fotos de prueba para la extracción (no subir)
 scripts/fixtures/
+
+# archivos de trabajo del workflow (no subir)
+.agents/
