@@ -104,13 +104,13 @@ Hooks creados:
 
 ---
 
-## Tarea 6 — S3, DynamoDB y guardado del formulario
+## Tarea 6 — S3, DynamoDB y guardado del formulario ✅
 
-- [ ] Crear `src/lib/storage.ts` con:
+- [x] Crear `src/lib/storage.ts` con:
   - `uploadImage(id: string, bytes: Uint8Array): Promise<void>` — sube a S3 con key `uploads/{id}.jpg`, `ContentType: 'image/jpeg'`, sin ACL pública.
   - Cliente `S3Client` instanciado con `{ region: process.env.APP_REGION }`.
-- [ ] Crear `src/lib/auth.ts` con `verifyAdminKey(searchParams, stored)` que compara SHA-256 de ambos valores con `timingSafeEqual` y devuelve `false` si falta `k`. Ver diseño técnico, sección Seguridad y adminKey.
-- [ ] Crear `src/lib/db.ts` con:
+- [x] Crear `src/lib/auth.ts` con `verifyAdminKey(searchParams, stored)` que compara SHA-256 de ambos valores con `timingSafeEqual` y devuelve `false` si falta `k`. Ver diseño técnico, sección Seguridad y adminKey.
+- [x] Crear `src/lib/db.ts` con:
   - Cliente `DynamoDBClient` + `DynamoDBDocumentClient`.
   - `saveForm(form: FormRecord): Promise<void>` — `PutItem` en la tabla.
   - `getForm(id: string): Promise<FormRecord | null>` — `GetItem`.
@@ -118,14 +118,14 @@ Hooks creados:
   - `listResponses(formId: string): Promise<ResponseRecord[]>` — `Query` con `begins_with(sk, 'RESP#')`.
   - `saveResponse(response: ResponseRecord): Promise<void>` — `PutItem`.
   - Tipos `FormRecord` y `ResponseRecord` derivados de Zod o definidos en `schema.ts`.
-- [ ] Actualizar `POST /api/forms/route.ts` para:
+- [x] Actualizar `POST /api/forms/route.ts` para:
   - Rechazar imágenes mayores de **5 MB** con 413.
   - Llamar a `extractFormSchema`.
   - Generar `id = nanoid(10)` y `adminKey = nanoid(24)`.
   - Subir la imagen a S3 con `uploadImage`.
   - Guardar el formulario en DynamoDB con `status: 'borrador'`.
   - Devolver `{ id, adminKey }`.
-- [ ] Commit: `feat: almacenamiento en s3 y dynamodb, post /api/forms completo`
+- [x] Commit: `feat: almacenamiento en s3 y dynamodb, post /api/forms completo`
 
 ---
 
