@@ -198,3 +198,28 @@ Las variables con prefijo `NEXT_PUBLIC_` se incrustran en el bundle del cliente 
 | Credenciales AWS | IAM Compute Role (nunca variables de entorno) |
 | Secrets de terceros | AWS Secrets Manager / Parameter Store, leídos en runtime con el compute role |
 | Variables de cliente | Prefijo `NEXT_PUBLIC_` (baked in build time) |
+
+---
+
+## C. Modelo de extracción elegido: Nova Pro
+
+El modelo elegido para la extracción de formularios en FrankenForms es **Amazon Nova Pro** (`us.amazon.nova-pro-v1:0`), configurado en `BEDROCK_MODEL_ID`.
+
+### Motivo
+
+Se compararon Nova Pro y Nova Lite sobre las 6 fotos de prueba (`scripts/fixtures/`). Nova Pro ganó por **mayor consistencia de tipos** (Nova Lite clasificó "Edad" como `text` en las fotos 01 y 05, donde debía ser `number`) y por **mejor detección de campos y obligatorios en la foto torcida** (Nova Lite solo detectó 6/8 campos). Ambos modelos manejan bien el caso ILEGIBLE (foto 06).
+
+### Tabla comparativa (Nova Pro vs Nova Lite)
+
+| Foto | Nova Pro | Nova Lite |
+|---|---|---|
+| 01 ideal | 4,2 s · 8/8 campos, 5 obligatorios, tipos correctos | 8,5 s · Edad como text |
+| 02 real | 10,3 s · 26 campos | 9,5 s · 28 campos |
+| 03 torcido | 4,7 s · 8/8, 0 obligatorios | 3,4 s · solo 6/8 campos |
+| 04 poca luz | 4,9 s · 8/8, 2 de 5 obligatorios | 4,1 s · 8/8, 5 obligatorios |
+| 05 manuscrito | 4,3 s · 8/8, 5 obligatorios, tipos correctos | 5,7 s · Edad como text |
+| 06 no formulario | 2,3 s · ILEGIBLE | 2,4 s · ILEGIBLE |
+
+### Nota sobre los modelos Claude
+
+Los modelos Claude (`us.anthropic.claude-*`) requieren **aceptar el acuerdo de Anthropic** en la consola de Bedrock de la cuenta (Model access). Mientras ese acuerdo no esté aceptado, las llamadas devuelven `403 AccessDeniedException` ("... is not available for this account"). Por eso la comparación inicial con Claude falló y se optó por los modelos Nova, que sí tienen acceso en la cuenta.

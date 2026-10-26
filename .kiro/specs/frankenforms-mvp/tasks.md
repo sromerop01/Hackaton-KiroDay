@@ -86,10 +86,10 @@ Hooks creados:
 
 ---
 
-## Tarea 5 — Extracción con Bedrock
+## Tarea 5 — Extracción con Bedrock ✅
 
-- [ ] Crear `src/lib/prompts/extraction.ts` con la constante `export const EXTRACTION_PROMPT = \`...\`` que contiene el prompt del sistema exactamente como está en los requisitos. Este archivo es TypeScript puro para que el bundler de Next.js lo incluya en el SSR sin configuración adicional.
-- [ ] Crear `src/lib/bedrock.ts` con la función `extractFormSchema(imageBytes: Uint8Array): Promise<FormSchemaType>`:
+- [x] Crear `src/lib/prompts/extraction.ts` con la constante `export const EXTRACTION_PROMPT = \`...\`` que contiene el prompt del sistema exactamente como está en los requisitos. Este archivo es TypeScript puro para que el bundler de Next.js lo incluya en el SSR sin configuración adicional.
+- [x] Crear `src/lib/bedrock.ts` con la función `extractFormSchema(imageBytes: Uint8Array): Promise<FormSchemaType>`:
   - Importar `EXTRACTION_PROMPT` desde `@/lib/prompts/extraction`.
   - Generar el JSON Schema con `z.toJSONSchema(FormSchema)` de Zod 4 nativo; desestructurar y descartar `$schema` antes de pasarlo como `inputSchema.json`.
   - Construir el `ConverseCommandInput` con la imagen, el sistema, la herramienta `emit_form_schema`, `toolChoice: { tool: { name: 'emit_form_schema' } }`, `temperature: 0` y `maxTokens: 4096`.
@@ -98,9 +98,9 @@ Hooks creados:
   - Si el título es `"ILEGIBLE"`, lanzar `IlegibleError`.
   - Si el segundo intento falla, lanzar `ExtractionError`.
 - [ ] Crear `src/app/api/forms/route.ts` con solo el `POST` (sin guardar aún): recibe multipart/form-data con la imagen, rechaza si supera **5 MB**, llama a `extractFormSchema` y devuelve el schema en JSON.
-- [ ] Crear `scripts/test-extraction.ts`: recibe la ruta de una imagen como argumento `process.argv[2]`, llama a `extractFormSchema` directamente (leyendo la imagen con `fs.readFileSync`) e imprime el JSON resultante y la latencia en ms.
-- [ ] Probar manualmente con `npx tsx scripts/test-extraction.ts <ruta-imagen>` y confirmar que funciona con una foto de formulario real antes de hacer commit.
-- [ ] Commit: `feat: integración con bedrock para extracción del esquema`
+- [x] Crear `scripts/test-extraction.ts`: recibe la ruta de una imagen como argumento `process.argv[2]`, llama a `extractFormSchema` directamente (leyendo la imagen con `fs.readFileSync`) e imprime el JSON resultante y la latencia en ms.
+- [x] Probar manualmente con `npx tsx scripts/test-extraction.ts <ruta-imagen>` y confirmar que funciona con una foto de formulario real antes de hacer commit.
+- [x] Commit: `feat: integración con bedrock para extracción del esquema`
 
 ---
 
