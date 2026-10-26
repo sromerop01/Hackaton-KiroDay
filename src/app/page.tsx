@@ -1,69 +1,188 @@
-import Image from "next/image";
+'use client'
+
+import { useEffect, useRef, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import PrivacyNotice from '@/components/PrivacyNotice'
+import ReanimationLoader from '@/components/ReanimationLoader'
+import { compressImage } from '@/lib/image'
+
+type EstadoEnvio = 'idle' | 'enviando'
+
+// Mensajes de error temáticos según el status de /api/forms.
+function mensajeDeError(status: number, errorBackend?: string): string {
+  if (status === 422) {
+    return errorBackend ?? 'El paciente no respondió, intenta de nuevo'
+  }
+  if (status === 413) {
+    return 'La imagen es demasiado grande, intenta con una foto más liviana'
+  }
+  return (
+    errorBackend ?? 'No pudimos revivir este formulario, intenta con otra foto'
+  )
+}
 
 export default function Home() {
+  const router = useRouter()
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  const [blob, setBlob] = useState<Blob | null>(null)
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+  const [estado, setEstado] = useState<EstadoEnvio>('idle')
+  const [error, setError] = useState<string | null>(null)
+  const [comprimiendo, setComprimiendo] = useState(false)
+
+  // Revocar el objectURL al cambiar de imagen o desmontar para no filtrar memoria.
+  useEffect(() => {
+    if (!previewUrl) return
+    return () => URL.revokeObjectURL(previewUrl)
+  }, [previewUrl])
+
+  async function onSeleccionImagen(
+    event: React.ChangeEvent<HTMLInputElement>,
+  ): Promise<void> {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    setError(null)
+    setComprimiendo(true)
+    try {
+      const comprimida = await compressImage(file)
+      setBlob(comprimida)
+      setPreviewUrl((anterior) => {
+        if (anterior) URL.revokeObjectURL(anterior)
+        return URL.createObjectURL(comprimida)
+      })
+    } catch {
+      setError('No pudimos preparar esa foto, intenta con otra')
+      setBlob(null)
+    } finally {
+      setComprimiendo(false)
+    }
+  }
+
+  async function onReanimar(): Promise<void> {
+    if (!blob) return
+
+    setEstado('enviando')
+    setError(null)
+
+    try {
+      const formData = new FormData()
+      formData.append('image', blob, 'foto.jpg')
+
+      const respuesta = await fetch('/api/forms', {
+        method: 'POST',
+        body: formData,
+      })
+
+      if (!respuesta.ok) {
+        let errorBackend: string | undefined
+        try {
+          const cuerpo: unknown = await respuesta.json()
+          if (
+            cuerpo &&
+            typeof cuerpo === 'object' &&
+            'error' in cuerpo &&
+            typeof (cuerpo as { error: unknown }).error === 'string'
+          ) {
+            errorBackend = (cuerpo as { error: string }).error
+          }
+        } catch {
+          // Sin cuerpo JSON legible; se usa el mensaje por status.
+        }
+        setError(mensajeDeError(respuesta.status, errorBackend))
+        setEstado('idle')
+        return
+      }
+
+      const datos: unknown = await respuesta.json()
+      if (
+        !datos ||
+        typeof datos !== 'object' ||
+        typeof (datos as { id: unknown }).id !== 'string' ||
+        typeof (datos as { adminKey: unknown }).adminKey !== 'string'
+      ) {
+        setError('No pudimos revivir este formulario, intenta con otra foto')
+        setEstado('idle')
+        return
+      }
+
+      const { id, adminKey } = datos as { id: string; adminKey: string }
+      router.push(`/revisar/${id}?k=${adminKey}`)
+    } catch {
+      setError('No pudimos revivir este formulario, intenta con otra foto')
+      setEstado('idle')
+    }
+  }
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-6 px-4 py-8">
+      <header className="text-center">
+        <h1 className="text-3xl font-black tracking-tight text-[#7CFF3A]">
+          FrankenForms
+        </h1>
+        <p className="mt-1 text-sm text-zinc-400">
+          Revive tu formulario en papel. Tómale una foto y dale vida.
+        </p>
+      </header>
+
+      {estado === 'enviando' ? (
+        <ReanimationLoader />
+      ) : (
+        <>
+          <PrivacyNotice />
+
+          {error && (
+            <p
+              role="alert"
+              className="rounded-lg border border-[#FB923C]/50 bg-[#FB923C]/10 p-3 text-sm text-[#FB923C]"
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+              {error}
+            </p>
+          )}
+
+          {previewUrl && (
+            <div className="overflow-hidden rounded-xl border border-[#7CFF3A]/30">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={previewUrl}
+                alt="Vista previa del formulario"
+                className="h-auto w-full"
+              />
+            </div>
+          )}
+
+          <input
+            ref={inputRef}
+            id="foto-formulario"
+            type="file"
+            accept="image/*"
+            capture="environment"
+            onChange={onSeleccionImagen}
+            className="sr-only"
+          />
+
+          <label
+            htmlFor="foto-formulario"
+            className="flex cursor-pointer items-center justify-center rounded-xl border-2 border-dashed border-[#A855F7] bg-[#A855F7]/10 px-4 py-6 text-center text-base font-semibold text-zinc-100 transition-colors hover:bg-[#A855F7]/20"
           >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            {comprimiendo
+              ? 'Preparando la foto…'
+              : previewUrl
+                ? 'Tomar o elegir otra foto'
+                : 'Tomar o elegir una foto'}
+          </label>
+
+          <button
+            type="button"
+            onClick={onReanimar}
+            disabled={!blob || comprimiendo}
+            className="rounded-xl bg-[#7CFF3A] px-4 py-4 text-lg font-black text-black transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
           >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
-  );
+            Reanimar
+          </button>
+        </>
+      )}
+    </main>
+  )
 }
