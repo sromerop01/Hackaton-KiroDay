@@ -50,7 +50,6 @@ function extractToolInput(response: ConverseCommandOutput): DocumentType | undef
 }
 
 function buildInput(
-  imageBytes: Uint8Array,
   modelId: string,
   toolInputSchema: DocumentType,
   messages: Message[],
@@ -100,7 +99,7 @@ export async function extractFormSchema(
 
   // Primer intento.
   const firstResponse = await client.send(
-    new ConverseCommand(buildInput(imageBytes, resolvedModelId, toolInputSchema, messages)),
+    new ConverseCommand(buildInput(resolvedModelId, toolInputSchema, messages)),
   )
   const firstRaw = extractToolInput(firstResponse)
   let parsed = FormSchema.safeParse(firstRaw)
@@ -134,7 +133,7 @@ export async function extractFormSchema(
 
     const retryResponse = await client.send(
       new ConverseCommand(
-        buildInput(imageBytes, resolvedModelId, toolInputSchema, retryMessages),
+        buildInput(resolvedModelId, toolInputSchema, retryMessages),
       ),
     )
     parsed = FormSchema.safeParse(extractToolInput(retryResponse))
