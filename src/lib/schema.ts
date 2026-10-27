@@ -75,3 +75,13 @@ export const FormSchema = z
 export type FormSchemaType = z.infer<typeof FormSchema>
 export type FieldKind = z.infer<typeof FieldType>
 export type FieldDef = z.infer<typeof Field>
+
+export const FormStatus = z.enum(['borrador', 'publicado'])
+export type FormStatusType = z.infer<typeof FormStatus>
+
+// Cuerpo del PUT /api/forms/{id}: el esquema editado y el estado deseado.
+export const UpdateFormRequest = z.object({
+  form: FormSchema,
+  status: FormStatus,
+})
+export type UpdateFormRequestType = z.infer<typeof UpdateFormRequest>
