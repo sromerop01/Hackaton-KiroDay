@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
-/* Paleta Halloween de FrankenForms */
+/* Paleta Halloween de FrankenForms. El formulario público no la usa: tiene su propia paleta clara. */
 :root {
-  --background: #0a0a0a; /* fondo casi negro */
+  --background: #0b0b0f; /* fondo casi negro */
   --foreground: #ededed;
   --acid-green: #7cff3a;
   --purple: #a855f7;
@@ -12,11 +12,11 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-acid-green: var(--acid-green);
+  --color-acid: var(--acid-green);
   --color-purple: var(--purple);
   --color-orange: var(--orange);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-creepster);
 }
 
 body {

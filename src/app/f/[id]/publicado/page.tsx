@@ -36,9 +36,9 @@ async function Publicado({ params, searchParams }: Pick<Props, 'params' | 'searc
   if (record.status !== 'publicado') {
     return (
       <section className="flex flex-col items-center gap-4 py-12 text-center">
-        <h1 className="text-2xl font-black text-[#FB923C]">Aún no está publicado</h1>
+        <h1 className="text-2xl font-black text-orange">Aún no está publicado</h1>
         <p className="text-zinc-300">Revisa el formulario y publícalo para obtener el enlace y el QR.</p>
-        <Link href={enlaceRevision} className="min-h-12 rounded-xl bg-[#7CFF3A] px-5 py-3 font-black text-black">
+        <Link href={enlaceRevision} className="min-h-12 rounded-xl bg-acid px-5 py-3 font-black text-black">
           Ir a la revisión
         </Link>
       </section>
@@ -50,8 +50,8 @@ async function Publicado({ params, searchParams }: Pick<Props, 'params' | 'searc
   return (
     <div className="flex flex-col gap-6">
       <header className="text-center">
-        <p className="text-sm font-semibold uppercase tracking-widest text-[#A855F7]">¡Está vivo!</p>
-        <h1 className="mt-1 text-2xl font-black text-[#7CFF3A]">{record.title}</h1>
+        <p className="text-sm font-semibold uppercase tracking-widest text-purple">¡Está vivo!</p>
+        <h1 className="mt-1 text-2xl font-black text-acid">{record.title}</h1>
         <p className="mt-1 text-sm text-zinc-400">Escanea el código para diligenciarlo desde el celular.</p>
       </header>
 
@@ -71,7 +71,7 @@ async function Publicado({ params, searchParams }: Pick<Props, 'params' | 'searc
           <CopyButton
             text={enlacePublico}
             label="Copiar enlace"
-            className="min-h-12 flex-1 rounded-xl bg-[#7CFF3A] text-base font-black text-black hover:opacity-90"
+            className="min-h-12 flex-1 rounded-xl bg-acid text-base font-black text-black hover:opacity-90"
           />
           <Link
             href={`/f/${id}`}
@@ -82,8 +82,8 @@ async function Publicado({ params, searchParams }: Pick<Props, 'params' | 'searc
         </div>
       </section>
 
-      <section className="flex flex-col gap-2 rounded-xl border border-[#FB923C]/50 bg-[#FB923C]/10 p-4">
-        <h2 className="text-base font-semibold text-[#FB923C]">Enlace de administración</h2>
+      <section className="flex flex-col gap-2 rounded-xl border border-orange/50 bg-orange/10 p-4">
+        <h2 className="text-base font-semibold text-orange">Enlace de administración</h2>
         <p className="text-sm text-zinc-200">
           Guárdalo: con él ves las respuestas y descargas el CSV. No lo compartas y no podrás recuperarlo si lo
           pierdes.
@@ -91,7 +91,7 @@ async function Publicado({ params, searchParams }: Pick<Props, 'params' | 'searc
         <div className="flex flex-wrap gap-3">
           <Link
             href={enlaceRespuestas}
-            className="flex min-h-12 flex-1 items-center justify-center rounded-xl border border-[#FB923C] px-4 text-base font-semibold text-[#FB923C]"
+            className="flex min-h-12 flex-1 items-center justify-center rounded-xl border border-orange px-4 text-base font-semibold text-orange"
           >
             Ver respuestas
           </Link>

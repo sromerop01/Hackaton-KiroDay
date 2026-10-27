@@ -41,7 +41,7 @@ export default function ReanimationLoader() {
         />
       </svg>
 
-      <p className="text-lg font-semibold text-[#7CFF3A]">{MENSAJES[indice]}</p>
+      <p className="text-lg font-semibold text-acid">{MENSAJES[indice]}</p>
       <p className="text-sm text-zinc-400">
         El doctor está trabajando, esto tarda unos segundos…
       </p>
