@@ -17,7 +17,7 @@ interface SchemaEditorProps {
 type Accion = 'guardar' | 'publicar' | null
 
 const inputClass =
-  'block min-h-12 w-full rounded-lg border border-zinc-600 bg-zinc-900 px-3 py-2 text-base text-zinc-100 focus:border-[#7CFF3A] focus:outline-none focus:ring-2 focus:ring-[#7CFF3A]/30'
+  'block min-h-12 w-full rounded-lg border border-zinc-600 bg-zinc-900 px-3 py-2 text-base text-zinc-100 focus:border-acid focus:outline-none focus:ring-2 focus:ring-acid/30'
 
 export default function SchemaEditor({ id, adminKey, initial, status }: SchemaEditorProps) {
   const router = useRouter()
@@ -82,7 +82,7 @@ export default function SchemaEditor({ id, adminKey, initial, status }: SchemaEd
   return (
     <div className="flex flex-col gap-6">
       {errores.length > 0 && (
-        <div role="alert" className="rounded-lg border border-[#FB923C]/60 bg-[#FB923C]/10 p-3 text-sm text-[#FB923C]">
+        <div role="alert" className="rounded-lg border border-orange/60 bg-orange/10 p-3 text-sm text-orange">
           <p className="mb-1 font-semibold">Revisa antes de continuar:</p>
           <ul className="list-inside list-disc">
             {errores.map((e) => (
@@ -130,13 +130,13 @@ export default function SchemaEditor({ id, adminKey, initial, status }: SchemaEd
       <button
         type="button"
         onClick={() => cambiar([...fields, newField(fields)])}
-        className="min-h-12 rounded-xl border-2 border-dashed border-[#A855F7] text-base font-semibold text-zinc-100 hover:bg-[#A855F7]/10"
+        className="min-h-12 rounded-xl border-2 border-dashed border-purple text-base font-semibold text-zinc-100 hover:bg-purple/10"
       >
         + Agregar campo
       </button>
 
       {mensaje && (
-        <p role="status" className="text-center text-sm text-[#7CFF3A]">
+        <p role="status" className="text-center text-sm text-acid">
           {mensaje}
         </p>
       )}
@@ -154,7 +154,7 @@ export default function SchemaEditor({ id, adminKey, initial, status }: SchemaEd
           type="button"
           onClick={() => enviar('publicado')}
           disabled={accion !== null}
-          className="min-h-12 flex-[2] rounded-xl bg-[#7CFF3A] text-base font-black text-black hover:opacity-90 disabled:opacity-50"
+          className="min-h-12 flex-[2] rounded-xl bg-acid text-base font-black text-black hover:opacity-90 disabled:opacity-50"
         >
           {accion === 'publicar' ? 'Publicando…' : status === 'publicado' ? 'Guardar y ver enlace' : '¡Está vivo! Publicar'}
         </button>

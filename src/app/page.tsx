@@ -118,7 +118,7 @@ export default function Home() {
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-6 px-4 py-8">
       <header className="text-center">
-        <h1 className="text-3xl font-black tracking-tight text-[#7CFF3A]">
+        <h1 className="text-3xl font-black tracking-tight text-acid">
           FrankenForms
         </h1>
         <p className="mt-1 text-sm text-zinc-400">
@@ -135,14 +135,14 @@ export default function Home() {
           {error && (
             <p
               role="alert"
-              className="rounded-lg border border-[#FB923C]/50 bg-[#FB923C]/10 p-3 text-sm text-[#FB923C]"
+              className="rounded-lg border border-orange/50 bg-orange/10 p-3 text-sm text-orange"
             >
               {error}
             </p>
           )}
 
           {previewUrl && (
-            <div className="overflow-hidden rounded-xl border border-[#7CFF3A]/30">
+            <div className="overflow-hidden rounded-xl border border-acid/30">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={previewUrl}
@@ -164,7 +164,7 @@ export default function Home() {
 
           <label
             htmlFor="foto-formulario"
-            className="flex cursor-pointer items-center justify-center rounded-xl border-2 border-dashed border-[#A855F7] bg-[#A855F7]/10 px-4 py-6 text-center text-base font-semibold text-zinc-100 transition-colors hover:bg-[#A855F7]/20"
+            className="flex cursor-pointer items-center justify-center rounded-xl border-2 border-dashed border-purple bg-purple/10 px-4 py-6 text-center text-base font-semibold text-zinc-100 transition-colors hover:bg-purple/20"
           >
             {comprimiendo
               ? 'Preparando la foto…'
@@ -177,7 +177,7 @@ export default function Home() {
             type="button"
             onClick={onReanimar}
             disabled={!blob || comprimiendo}
-            className="rounded-xl bg-[#7CFF3A] px-4 py-4 text-lg font-black text-black transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+            className="rounded-xl bg-acid px-4 py-4 text-lg font-black text-black transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
           >
             Reanimar
           </button>

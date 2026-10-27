@@ -10,7 +10,7 @@ export default function RevisarPage({ params, searchParams }: Props) {
   return (
     <main className="mx-auto w-full max-w-xl flex-1 px-4 pt-8">
       <header className="mb-6">
-        <h1 className="text-2xl font-black text-[#7CFF3A]">Revisión del paciente</h1>
+        <h1 className="text-2xl font-black text-acid">Revisión del paciente</h1>
         <p className="mt-1 text-sm text-zinc-400">
           Corrige lo que la IA no entendió bien: etiquetas, tipos, opciones y campos obligatorios.
         </p>

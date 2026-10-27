@@ -34,8 +34,8 @@ async function Panel({ params, searchParams }: Pick<Props, 'params' | 'searchPar
   return (
     <div className="flex flex-col gap-6">
       <header className="flex flex-col gap-1">
-        <p className="text-sm font-semibold uppercase tracking-widest text-[#A855F7]">Panel de respuestas</p>
-        <h1 className="text-2xl font-black text-[#7CFF3A]">{record.title}</h1>
+        <p className="text-sm font-semibold uppercase tracking-widest text-purple">Panel de respuestas</p>
+        <h1 className="text-2xl font-black text-acid">{record.title}</h1>
         <p className="text-base text-zinc-300">
           {responses.length === 1 ? '1 respuesta' : `${responses.length} respuestas`}
         </p>
@@ -44,7 +44,7 @@ async function Panel({ params, searchParams }: Pick<Props, 'params' | 'searchPar
       <div className="flex flex-wrap gap-3">
         <a
           href={`/api/forms/${id}/export?${keyParam}`}
-          className="flex min-h-12 items-center rounded-xl bg-[#7CFF3A] px-5 text-base font-black text-black hover:opacity-90"
+          className="flex min-h-12 items-center rounded-xl bg-acid px-5 text-base font-black text-black hover:opacity-90"
         >
           Exportar CSV
         </a>
@@ -67,7 +67,7 @@ async function Panel({ params, searchParams }: Pick<Props, 'params' | 'searchPar
           <ol className="flex flex-col gap-4 md:hidden">
             {responses.map((response) => (
               <li key={response.sk} className="rounded-xl border border-zinc-700 bg-zinc-950 p-4">
-                <p className="mb-3 text-sm font-semibold text-[#A855F7]">{formatDate(response.submittedAt)}</p>
+                <p className="mb-3 text-sm font-semibold text-purple">{formatDate(response.submittedAt)}</p>
                 <dl className="flex flex-col gap-2">
                   {record.fields.map((field) => (
                     <div key={field.id}>

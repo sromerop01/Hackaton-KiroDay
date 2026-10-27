@@ -5,9 +5,9 @@ export default function PrivacyNotice() {
   return (
     <section
       aria-label="Aviso de privacidad"
-      className="rounded-xl border border-[#A855F7]/40 bg-[#A855F7]/10 p-4 text-sm leading-relaxed text-zinc-200"
+      className="rounded-xl border border-purple/40 bg-purple/10 p-4 text-sm leading-relaxed text-zinc-200"
     >
-      <h2 className="mb-2 text-base font-semibold text-[#FB923C]">
+      <h2 className="mb-2 text-base font-semibold text-orange">
         Antes de reanimar tu formulario
       </h2>
       <p className="mb-2">
@@ -17,7 +17,7 @@ export default function PrivacyNotice() {
       </p>
       <p className="mb-2">
         Usa preferiblemente un formulario{' '}
-        <strong className="font-semibold text-[#7CFF3A]">en blanco</strong>. Si
+        <strong className="font-semibold text-acid">en blanco</strong>. Si
         ya tiene datos personales escritos, tápalos antes de tomar la foto.
       </p>
       <p>

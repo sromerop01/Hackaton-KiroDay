@@ -13,7 +13,7 @@ interface FieldEditorProps {
 }
 
 const inputClass =
-  'block min-h-12 w-full rounded-lg border border-zinc-600 bg-zinc-900 px-3 py-2 text-base text-zinc-100 focus:border-[#7CFF3A] focus:outline-none focus:ring-2 focus:ring-[#7CFF3A]/30'
+  'block min-h-12 w-full rounded-lg border border-zinc-600 bg-zinc-900 px-3 py-2 text-base text-zinc-100 focus:border-acid focus:outline-none focus:ring-2 focus:ring-acid/30'
 
 const iconButton =
   'flex size-11 items-center justify-center rounded-lg border border-zinc-600 text-lg text-zinc-200 hover:bg-zinc-800 disabled:opacity-30'
@@ -27,9 +27,9 @@ export default function FieldEditor({ index, total, value, onChange, onMove, onR
   }
 
   return (
-    <li className="rounded-xl border border-[#A855F7]/40 bg-zinc-950 p-4">
+    <li className="rounded-xl border border-purple/40 bg-zinc-950 p-4">
       <div className="mb-3 flex items-center justify-between gap-2">
-        <span className="text-sm font-semibold text-[#A855F7]">Campo {index + 1}</span>
+        <span className="text-sm font-semibold text-purple">Campo {index + 1}</span>
         <div className="flex gap-2">
           <button type="button" onClick={() => onMove(-1)} disabled={index === 0} aria-label={`Subir campo ${index + 1}`} className={iconButton}>
             ↑
@@ -37,7 +37,7 @@ export default function FieldEditor({ index, total, value, onChange, onMove, onR
           <button type="button" onClick={() => onMove(1)} disabled={index === total - 1} aria-label={`Bajar campo ${index + 1}`} className={iconButton}>
             ↓
           </button>
-          <button type="button" onClick={onRemove} aria-label={`Eliminar campo ${index + 1}`} className={`${iconButton} text-[#FB923C]`}>
+          <button type="button" onClick={onRemove} aria-label={`Eliminar campo ${index + 1}`} className={`${iconButton} text-orange`}>
             ✕
           </button>
         </div>
@@ -108,7 +108,7 @@ export default function FieldEditor({ index, total, value, onChange, onMove, onR
           />
           <span
             aria-hidden="true"
-            className="relative h-8 w-14 shrink-0 rounded-full bg-zinc-700 transition-colors after:absolute after:left-1 after:top-1 after:size-6 after:rounded-full after:bg-white after:transition-transform peer-checked:bg-[#7CFF3A] peer-checked:after:translate-x-6 peer-focus-visible:ring-2 peer-focus-visible:ring-[#7CFF3A]"
+            className="relative h-8 w-14 shrink-0 rounded-full bg-zinc-700 transition-colors after:absolute after:left-1 after:top-1 after:size-6 after:rounded-full after:bg-white after:transition-transform peer-checked:bg-acid peer-checked:after:translate-x-6 peer-focus-visible:ring-2 peer-focus-visible:ring-acid"
           />
         </label>
       </div>
