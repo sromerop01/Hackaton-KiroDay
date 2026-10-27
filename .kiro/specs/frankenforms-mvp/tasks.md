@@ -129,15 +129,15 @@ Hooks creados:
 
 ---
 
-## Tarea 7 — Pantalla de revisión y edición del esquema
+## Tarea 7 — Pantalla de revisión y edición del esquema ✅
 
-- [ ] Crear `PUT /api/forms/[id]/route.ts`:
+- [x] Crear `PUT /api/forms/[id]/route.ts`:
   - Requiere `?k=adminKey` (usar `verifyAdminKey` de `src/lib/auth.ts`). Devuelve 401 si falla.
   - Acepta `{ fields, title, description, status }` en el body.
   - Valida el esquema completo con `FormSchema` antes de guardar.
   - Actualiza en DynamoDB con `updateForm`.
   - Si `status === 'publicado'`, devuelve `{ redirect: '/f/{id}/publicado?k={adminKey}' }` para que el cliente redirija.
-- [ ] Crear `src/app/revisar/[id]/page.tsx` como **Server Component**:
+- [x] Crear `src/app/revisar/[id]/page.tsx` como **Server Component**:
   - Recibe `id` y `k` como params/searchParams.
   - Llama directamente a `getForm(id)` y `verifyAdminKey(searchParams, form.adminKey)` — **sin fetch a `/api`**.
   - Si falla la verificación: muestra error "Acceso denegado" o `notFound()`.
@@ -145,7 +145,7 @@ Hooks creados:
   - El editor tiene: controles para editar etiqueta, tipo, obligatoriedad, opciones; botones para agregar y eliminar campos; botones de subir/bajar para reordenar.
   - Botón "Guardar borrador" → `PUT /api/forms/{id}?k=...` con `status: 'borrador'`.
   - Botón "Publicar" → `PUT /api/forms/{id}?k=...` con `status: 'publicado'` y redirección.
-- [ ] Commit: `feat: pantalla de revisión y edición del esquema`
+- [x] Commit: `feat: pantalla de revisión y edición del esquema`
 
 ---
 
