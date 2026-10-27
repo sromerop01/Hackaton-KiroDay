@@ -222,9 +222,9 @@ Hooks creados:
 
 ---
 
-## Tarea 13 — Documentación de infraestructura AWS
+## Tarea 13 — Documentación de infraestructura AWS ✅
 
-- [ ] Crear `docs/infra.md` con comandos AWS CLI comentados y placeholders (sin IDs reales):
+- [x] Crear `docs/infra.md` con comandos AWS CLI comentados y placeholders (sin IDs reales):
   - Crear tabla DynamoDB on-demand con `pk` (S) y `sk` (S).
   - Crear bucket S3 privado con Block Public Access habilitado.
   - Política IAM del compute role:
@@ -232,7 +232,7 @@ Hooks creados:
     - `dynamodb:GetItem`, `PutItem`, `UpdateItem`, `Query` sobre el ARN de la tabla.
     - `s3:PutObject`, `s3:GetObject` sobre `arn:aws:s3:::BUCKET_NAME/uploads/*`.
   - Instrucciones para adjuntar el compute role en Amplify (App settings → IAM roles).
-- [ ] Commit: `docs: infraestructura aws con comandos cli y política de iam`
+- [x] Commit: `docs: infraestructura aws con comandos cli y política de iam`
 
 ---
 
