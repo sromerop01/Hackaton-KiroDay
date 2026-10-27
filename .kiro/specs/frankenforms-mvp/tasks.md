@@ -167,19 +167,19 @@ Hooks creados:
 
 ---
 
-## Tarea 9 — Formulario público y guardado de respuestas
+## Tarea 9 — Formulario público y guardado de respuestas ✅
 
-- [ ] Crear `POST /api/forms/[id]/responses/route.ts`:
+- [x] Crear `POST /api/forms/[id]/responses/route.ts`:
   - Lee el formulario de DynamoDB con `getForm`. Si no existe o `status !== 'publicado'`, devuelve 404.
   - Valida el body con `buildResponseSchema(form)`.
   - Guarda la respuesta con `pk=FORM#{id}`, `sk=RESP#{Date.now()}#{uuid}`, `values`, `submittedAt`.
   - Devuelve `{ ok: true }`.
-- [ ] Crear `src/app/f/[id]/page.tsx` como **Server Component**:
+- [x] Crear `src/app/f/[id]/page.tsx` como **Server Component**:
   - Llama directamente a `getForm(id)` — **sin fetch a `/api`**.
   - Si no existe o `status !== 'publicado'`, retorna `notFound()`.
   - Renderiza el título, descripción y `<FormRenderer>` con paleta sobria (fondo blanco, contraste alto).
   - `FormRenderer` es un Client Component que, al enviar, llama a `POST /api/forms/{id}/responses` y muestra mensaje de éxito o error.
-- [ ] Commit: `feat: formulario público y guardado de respuestas`
+- [x] Commit: `feat: formulario público y guardado de respuestas`
 
 ---
 
