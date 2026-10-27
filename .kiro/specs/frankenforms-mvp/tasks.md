@@ -236,15 +236,15 @@ Hooks creados:
 
 ---
 
-## Tarea 14 — Script de demo de respaldo
+## Tarea 14 — Script de demo de respaldo ✅
 
-- [ ] Crear `scripts/seed-demo.ts`:
+- [x] Crear `scripts/seed-demo.ts`:
   - Define un formulario de ejemplo con al menos 4 campos variados (text, select, date, checkbox).
   - Lo sube a S3 (con una imagen de placeholder o una foto real incluida en `scripts/assets/`).
   - Lo guarda en DynamoDB con `status: 'publicado'`.
   - Imprime el enlace público y el `adminKey`.
-- [ ] Probar el script con `npx tsx scripts/seed-demo.ts` y confirmar que el formulario se puede diligenciar en producción.
-- [ ] Commit: `feat: script seed-demo para formulario de respaldo`
+- [x] Probar el script con `npx tsx scripts/seed-demo.ts` y confirmar que el formulario se puede diligenciar en producción.
+- [x] Commit: `feat: script seed-demo para formulario de respaldo`
 
 ---
 
