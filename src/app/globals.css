@@ -24,3 +24,57 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }
+
+/* Animación de reanimación: rayo que cae, destello y pulso en el monitor. */
+@keyframes ff-strike {
+  0%, 62%, 100% { opacity: 0.35; transform: scale(0.96); }
+  64% { opacity: 1; transform: scale(1.06); }
+  67% { opacity: 0.5; }
+  70% { opacity: 1; transform: scale(1.02); }
+  78% { opacity: 0.6; transform: scale(1); }
+}
+
+@keyframes ff-flash {
+  0%, 62%, 100% { opacity: 0; }
+  64% { opacity: 0.55; }
+  67% { opacity: 0.1; }
+  70% { opacity: 0.35; }
+  80% { opacity: 0; }
+}
+
+@keyframes ff-pulse {
+  from { stroke-dashoffset: 240; }
+  to { stroke-dashoffset: 0; }
+}
+
+.ff-bolt {
+  animation: ff-strike 1.8s ease-out infinite;
+  transform-origin: 50% 0%;
+}
+
+.ff-flash {
+  animation: ff-flash 1.8s ease-out infinite;
+}
+
+.ff-ecg {
+  stroke-dasharray: 120 120;
+  animation: ff-pulse 1.8s linear infinite;
+}
+
+/* Sin destellos para quien pidió reducir el movimiento (y por fotosensibilidad). */
+@media (prefers-reduced-motion: reduce) {
+  .ff-bolt,
+  .ff-flash,
+  .ff-ecg {
+    animation: none;
+  }
+  .ff-bolt {
+    opacity: 1;
+  }
+  .ff-flash {
+    opacity: 0;
+  }
+  .ff-ecg {
+    stroke-dasharray: none;
+  }
+}
