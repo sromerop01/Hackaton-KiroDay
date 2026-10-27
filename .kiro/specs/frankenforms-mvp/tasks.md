@@ -195,19 +195,19 @@ Hooks creados:
 
 ---
 
-## Tarea 11 — Panel de respuestas y exportación CSV
+## Tarea 11 — Panel de respuestas y exportación CSV ✅
 
-- [ ] Crear `GET /api/forms/[id]/export/route.ts`:
+- [x] Crear `GET /api/forms/[id]/export/route.ts`:
   - Requiere `?k=adminKey` (usar `verifyAdminKey`). Devuelve 401 si falla.
   - Carga el formulario con `getForm` y las respuestas con `listResponses`.
   - Genera el CSV: BOM UTF-8, encabezados ("Fecha" + labels de campos), filas con escape de celdas y protección CSV injection.
   - Devuelve con `Content-Type: text/csv; charset=utf-8` y `Content-Disposition: attachment; filename="respuestas.csv"`.
-- [ ] Crear `src/app/f/[id]/respuestas/page.tsx` como **Server Component**:
+- [x] Crear `src/app/f/[id]/respuestas/page.tsx` como **Server Component**:
   - Llama directamente a `getForm(id)`, `verifyAdminKey(searchParams, form.adminKey)` y `listResponses(id)` — **sin fetch a `/api`**.
   - Si falla la verificación: 401 / redirección.
   - Muestra título del formulario, número de respuestas y tabla con todas las respuestas.
   - Botón "Exportar CSV" → enlace a `/api/forms/{id}/export?k={adminKey}`.
-- [ ] Commit: `feat: panel de respuestas y exportación csv`
+- [x] Commit: `feat: panel de respuestas y exportación csv`
 
 ---
 
