@@ -211,14 +211,14 @@ Hooks creados:
 
 ---
 
-## Tarea 12 — Estilo Halloween y animación de rayo
+## Tarea 12 — Estilo Halloween y animación de rayo ✅
 
-- [ ] Refinar la paleta en `globals.css` con las variables CSS definidas en el diseño (bg, acid, purple, orange, text).
-- [ ] Aplicar tipografía con carácter para títulos (Google Fonts o fuente local) y fuente legible para el cuerpo.
-- [ ] Completar la animación de rayo en `ReanimationLoader.tsx` con CSS keyframes o Framer Motion (si ya está instalado). Mensajes rotativos con intervalo de ~1.5 s.
-- [ ] Revisar que el formulario público (`/f/{id}`) siga usando paleta sobria (no Halloween).
-- [ ] Asegurar que todos los textos del creador tienen contraste suficiente con el fondo casi negro.
-- [ ] Commit: `style: paleta halloween completa y animación de rayo`
+- [x] Refinar la paleta en `globals.css` con las variables CSS definidas en el diseño (bg, acid, purple, orange, text).
+- [x] Aplicar tipografía con carácter para títulos (Google Fonts o fuente local) y fuente legible para el cuerpo.
+- [x] Completar la animación de rayo en `ReanimationLoader.tsx` con CSS keyframes o Framer Motion (si ya está instalado). Mensajes rotativos con intervalo de ~1.5 s.
+- [x] Revisar que el formulario público (`/f/{id}`) siga usando paleta sobria (no Halloween).
+- [x] Asegurar que todos los textos del creador tienen contraste suficiente con el fondo casi negro.
+- [x] Commit: `style: paleta halloween completa y animación de rayo`
 
 ---
 
