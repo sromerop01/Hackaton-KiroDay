@@ -149,21 +149,21 @@ Hooks creados:
 
 ---
 
-## Tarea 8 — FormRenderer y componentes de campo
+## Tarea 8 — FormRenderer y componentes de campo ✅
 
-- [ ] Crear `src/components/fields/TextField.tsx`, `TextareaField.tsx`, `NumberField.tsx`, `DateField.tsx`, `EmailField.tsx`, `SelectField.tsx`, `CheckboxField.tsx`.
+- [x] Crear `src/components/fields/TextField.tsx`, `TextareaField.tsx`, `NumberField.tsx`, `DateField.tsx`, `EmailField.tsx`, `SelectField.tsx`, `CheckboxField.tsx`.
   - Cada componente recibe `field: FieldType__`, `value`, `onChange`, `error?: string`.
   - Altura mínima 48 px, fuente 16 px.
   - `<label>` siempre visible con el texto del campo.
   - Si hay error: `<span id="{id}-error" role="alert">` + `aria-describedby` en el input.
   - `type` e `inputMode` correctos por tipo de campo.
   - `CheckboxField` sin options → checkbox booleano. Con options → grupo de checkboxes.
-- [ ] Crear `src/components/FormRenderer.tsx`:
+- [x] Crear `src/components/FormRenderer.tsx`:
   - Recibe `form: FormSchemaType`, `onSubmit: (values: Record<string, unknown>) => void`, `isSubmitting?: boolean`.
   - Renderiza cada campo con el componente correspondiente.
   - Al enviar: valida con `buildResponseSchema(form)`. Si hay errores, los muestra por campo sin enviar.
   - Si pasa la validación, llama a `onSubmit`.
-- [ ] Commit: `feat: formrenderer y componentes de campo accesibles`
+- [x] Commit: `feat: formrenderer y componentes de campo accesibles`
 
 ---
 
