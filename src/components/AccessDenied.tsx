@@ -5,7 +5,7 @@ import Link from 'next/link'
 export default function AccessDenied() {
   return (
     <section className="flex flex-col items-center gap-4 py-12 text-center">
-      <h1 className="text-2xl font-black text-orange">Acceso denegado</h1>
+      <h1 className="font-display text-3xl tracking-wide text-orange">Acceso denegado</h1>
       <p className="text-base text-zinc-300">
         Este enlace de administración no es válido. Revisa que lo hayas copiado completo.
       </p>

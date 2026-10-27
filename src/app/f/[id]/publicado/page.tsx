@@ -50,7 +50,7 @@ async function Publicado({ params, searchParams }: Pick<Props, 'params' | 'searc
   return (
     <div className="flex flex-col gap-6">
       <header className="text-center">
-        <p className="text-sm font-semibold uppercase tracking-widest text-purple">¡Está vivo!</p>
+        <p className="font-display text-3xl tracking-wide text-purple">¡Está vivo!</p>
         <h1 className="mt-1 text-2xl font-black text-acid">{record.title}</h1>
         <p className="mt-1 text-sm text-zinc-400">Escanea el código para diligenciarlo desde el celular.</p>
       </header>
