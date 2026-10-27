@@ -118,7 +118,7 @@ export default function Home() {
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-6 px-4 py-8">
       <header className="text-center">
-        <h1 className="text-3xl font-black tracking-tight text-acid">
+        <h1 className="font-display text-5xl tracking-wide text-acid drop-shadow-[0_0_14px_rgb(124_255_58/0.45)]">
           FrankenForms
         </h1>
         <p className="mt-1 text-sm text-zinc-400">
