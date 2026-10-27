@@ -88,18 +88,27 @@ export async function updateForm(
   )
 }
 
+// Respuestas en orden cronológico. DynamoDB devuelve como máximo 1 MB por
+// consulta, así que se recorren todas las páginas.
 export async function listResponses(formId: string): Promise<ResponseRecord[]> {
-  const result = await doc.send(
-    new QueryCommand({
-      TableName: process.env.DDB_TABLE,
-      KeyConditionExpression: 'pk = :pk AND begins_with(sk, :prefix)',
-      ExpressionAttributeValues: {
-        ':pk': formPk(formId),
-        ':prefix': 'RESP#',
-      },
-    }),
-  )
-  return (result.Items as ResponseRecord[] | undefined) ?? []
+  const items: ResponseRecord[] = []
+  let startKey: Record<string, unknown> | undefined
+  do {
+    const result = await doc.send(
+      new QueryCommand({
+        TableName: process.env.DDB_TABLE,
+        KeyConditionExpression: 'pk = :pk AND begins_with(sk, :prefix)',
+        ExpressionAttributeValues: {
+          ':pk': formPk(formId),
+          ':prefix': 'RESP#',
+        },
+        ExclusiveStartKey: startKey,
+      }),
+    )
+    items.push(...((result.Items as ResponseRecord[] | undefined) ?? []))
+    startKey = result.LastEvaluatedKey
+  } while (startKey)
+  return items
 }
 
 export async function saveResponse(response: ResponseRecord): Promise<void> {
