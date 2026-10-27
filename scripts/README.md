@@ -14,8 +14,18 @@ Utilidades que se ejecutan desde la terminal con `npx tsx`. Usan las variables d
 npx tsx scripts/test-extraction.ts ./ruta/a/formulario.jpg
 npx tsx scripts/test-storage.ts              # intenta Bedrock; si falla por red, usa esquema de ejemplo
 npx tsx scripts/test-storage.ts --skip-bedrock  # fuerza el esquema de ejemplo sin llamar a Bedrock
-npx tsx scripts/seed-demo.ts
+npx tsx scripts/seed-demo.ts                                   # enlaces con http://localhost:3000
+npx tsx scripts/seed-demo.ts --base-url https://<tu-app>.amplifyapp.com   # enlaces de producción
+npx tsx scripts/seed-demo.ts --image ruta/a/otra-foto.jpg      # otra imagen para S3
 ```
+
+## Formulario de respaldo para la demo
+
+`seed-demo.ts` publica directamente (sin Bedrock) el formulario *Inscripción al taller Kiro Day*, con 7 campos: texto, correo, selección, fecha, casillas múltiples, área de texto y una casilla obligatoria. Es el plan B si fallan la cámara, la red del lugar o Bedrock.
+
+La hoja [`assets/formulario-demo.jpg`](assets/formulario-demo.jpg) tiene los mismos campos y sirve también como formulario impreso para la demo en vivo. Probada con Nova Pro, el modelo detecta los 7 campos; a veces no marca *Rol* como obligatorio, lo que se corrige en la pantalla de revisión.
+
+Para producción, ejecuta el script con las variables de la cuenta de despliegue (las mismas de Amplify) y `--base-url` con la URL de Amplify.
 
 El `adminKey` que imprime `seed-demo.ts` es secreto: no lo subas al repo ni lo muestres en pantalla durante la presentación.
 
