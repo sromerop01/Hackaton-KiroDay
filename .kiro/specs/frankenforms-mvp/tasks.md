@@ -248,16 +248,16 @@ Hooks creados:
 
 ---
 
-## Tarea 15 — README final
+## Tarea 15 — README final ✅
 
-- [ ] Actualizar `README.md` con:
+- [x] Actualizar `README.md` con:
   - Qué hace FrankenForms (2-3 párrafos).
   - Diagrama de arquitectura en Mermaid (cliente → Next.js → Bedrock/S3/DynamoDB → Amplify).
   - Tabla de herramientas de Kiro usadas: Specs, Steering, Hooks, MCP, Powers, Skills — y para qué se usó cada una.
   - Instrucciones de despliegue (referencia a `docs/infra.md`).
   - Capturas de pantalla (o placeholders).
   - Créditos al AWS User Group Medellín y hashtag #KiroDayMedellin.
-- [ ] Commit: `docs: readme final con arquitectura y herramientas de kiro`
+- [x] Commit: `docs: readme final con arquitectura y herramientas de kiro`
 
 ---
 
