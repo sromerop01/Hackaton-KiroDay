@@ -183,15 +183,15 @@ Hooks creados:
 
 ---
 
-## Tarea 10 — Pantalla de publicación con QR
+## Tarea 10 — Pantalla de publicación con QR ✅
 
-- [ ] Crear `src/app/f/[id]/publicado/page.tsx` como **Server Component**:
+- [x] Crear `src/app/f/[id]/publicado/page.tsx` como **Server Component**:
   - Recibe `id` y `k` de searchParams.
   - Llama directamente a `getForm(id)` y `verifyAdminKey(searchParams, form.adminKey)` — **sin fetch a `/api`**.
   - Si falla la verificación, redirige a `/`.
   - Genera el QR del enlace público con `qrcode` (como data URL).
   - Muestra: enlace público, QR, botón "Copiar enlace" (Client Component), y el enlace de administración `/f/{id}/respuestas?k={adminKey}` con advertencia "Guarda este enlace, no lo podrás recuperar".
-- [ ] Commit: `feat: pantalla de publicación con qr y enlace de administración`
+- [x] Commit: `feat: pantalla de publicación con qr y enlace de administración`
 
 ---
 
