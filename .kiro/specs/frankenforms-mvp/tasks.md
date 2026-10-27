@@ -66,23 +66,23 @@ Hooks creados:
 
 ---
 
-## Tarea 4 — Compresión de imagen y pantalla de subida
+## Tarea 4 — Compresión de imagen y pantalla de subida ✅
 
-- [ ] Crear `src/lib/image.ts` con la función `compressImage(file: File): Promise<Blob>`:
+- [x] Crear `src/lib/image.ts` con la función `compressImage(file: File): Promise<Blob>`:
   - Usar `createImageBitmap(file, { imageOrientation: 'from-image' })` para corregir EXIF.
   - Calcular dimensiones con máx 1600 px en el lado mayor.
   - Dibujar en un `<canvas>` del DOM (`document.createElement('canvas')`) y exportar con `canvas.toBlob(..., 'image/jpeg', 0.8)`.
   - **No usar `OffscreenCanvas`** (no compatible con iOS Safari).
   - Ver diseño técnico, sección Compresión de imagen.
-- [ ] Crear el componente `src/components/ReanimationLoader.tsx`: animación de rayo (CSS o SVG) con mensajes rotativos ("Diagnosticando al paciente…", "Conectando electrodos…", "Dándole vida…") y paleta Halloween.
-- [ ] Crear la página `src/app/page.tsx` con:
+- [x] Crear el componente `src/components/ReanimationLoader.tsx`: animación de rayo (CSS o SVG) con mensajes rotativos ("Diagnosticando al paciente…", "Conectando electrodos…", "Dándole vida…") y paleta Halloween.
+- [x] Crear la página `src/app/page.tsx` con:
   - Aviso de privacidad visible ANTES del botón de subida.
   - `<input accept="image/*" capture="environment">` estilizado.
   - Al seleccionar la imagen: llamar a `compressImage`, mostrar preview, y habilitar el botón "Reanimar".
   - Al hacer clic en "Reanimar": llamar a `POST /api/forms`, mostrar `ReanimationLoader`, y redirigir a `/revisar/{id}?k={adminKey}` al terminar.
   - Manejo de errores: mensaje amable si el API falla (incluyendo el caso ILEGIBLE).
-- [ ] Aplicar paleta Halloween a esta pantalla en `globals.css` o con variables CSS.
-- [ ] Commit: `feat: compresión de imagen en cliente y pantalla de subida`
+- [x] Aplicar paleta Halloween a esta pantalla en `globals.css` o con variables CSS.
+- [x] Commit: `feat: compresión de imagen en cliente y pantalla de subida`
 
 ---
 
